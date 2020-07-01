@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Redis学习笔记(二)：redis的数据结构(二)哈希 | ChingKwok的后端博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言在前篇中，我们已经了解了redis的字符串了，接下来让我们继续学习Redis的数据结构——哈希（Hash）类型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis学习笔记(二)：redis的数据结构(二)哈希">
+<meta property="og:url" content="http://blog.chingk.com/2020/02/02/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C-%E5%93%88%E5%B8%8C/index.html">
+<meta property="og:site_name" content="ChingKwok的后端博客">
+<meta property="og:description" content="前言在前篇中，我们已经了解了redis的字符串了，接下来让我们继续学习Redis的数据结构——哈希（Hash）类型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.chingk.com/2020/02/02/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C-%E5%93%88%E5%B8%8C/hash1.png">
+<meta property="article:published_time" content="2020-02-02T14:44:40.000Z">
+<meta property="article:modified_time" content="2020-07-01T15:52:10.010Z">
+<meta property="article:author" content="ChingKwok">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://blog.chingk.com/2020/02/02/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C-%E5%93%88%E5%B8%8C/hash1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="ChingKwok的后端博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+<body>
+<div id="container">
+  <div id="wrap">
+    <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChingKwok的后端博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">home</a>
+        
+          <a class="main-nav-link" href="/archives">archives</a>
+        
+          <a class="main-nav-link" href="/tags">tags</a>
+        
+          <a class="main-nav-link" href="/categories">categories</a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//www.baidu.com/baidu" method="get" accept-charset="utf-8" class="search-form">
+          <input type="search" name="word" maxlength="20" class="search-form-input" placeholder="Search">
+          <input type="submit" value="" class="search-form-submit">
+          <input name=tn type=hidden value="bds">
+          <input name=cl type=hidden value="3">
+          <input name=ct type=hidden value="2097152">
+          <input type="hidden" name="si" value="blog.chingk.com">
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+    <div class="outer">
+      <section id="main"><article id="post-Redis学习笔记-二-：redis的数据结构-二-哈希" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/02/02/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C-%E5%93%88%E5%B8%8C/" class="article-date">
+  <time datetime="2020-02-02T14:44:40.000Z" itemprop="datePublished">2020-02-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Redis学习笔记(二)：redis的数据结构(二)哈希
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+            <div id="toc" class="toc-article">
+              <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据结构——哈希（hash）"><span class="toc-number">2.</span> <span class="toc-text">数据结构——哈希（hash）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是哈希（hash）？"><span class="toc-number">2.1.</span> <span class="toc-text">什么是哈希（hash）？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#常用命令"><span class="toc-number">2.2.</span> <span class="toc-text">常用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-设置值"><span class="toc-number">2.2.1.</span> <span class="toc-text">1. 设置值</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-获取值"><span class="toc-number">2.2.2.</span> <span class="toc-text">2. 获取值</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-删除field"><span class="toc-number">2.2.3.</span> <span class="toc-text">3. 删除field</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-计算field个数"><span class="toc-number">2.2.4.</span> <span class="toc-text">4. 计算field个数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-批量获取field-value"><span class="toc-number">2.2.5.</span> <span class="toc-text">5. 批量获取field-value</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#6-批量设置field-value"><span class="toc-number">2.2.6.</span> <span class="toc-text">6. 批量设置field-value</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#7-判断field是否存在"><span class="toc-number">2.2.7.</span> <span class="toc-text">7. 判断field是否存在</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#8-获取所有field"><span class="toc-number">2.2.8.</span> <span class="toc-text">8. 获取所有field</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#9-获取所有value"><span class="toc-number">2.2.9.</span> <span class="toc-text">9. 获取所有value</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#10-获取所有field-value"><span class="toc-number">2.2.10.</span> <span class="toc-text">10. 获取所有field-value</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#11-自增-field"><span class="toc-number">2.2.11.</span> <span class="toc-text">11. 自增 field</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#12-自增-field-float"><span class="toc-number">2.2.12.</span> <span class="toc-text">12. 自增 field (float)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#13-计算value字符串长度"><span class="toc-number">2.2.13.</span> <span class="toc-text">13. 计算value字符串长度</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#内部编码"><span class="toc-number">2.3.</span> <span class="toc-text">内部编码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用场景"><span class="toc-number">2.4.</span> <span class="toc-text">使用场景</span></a></li></ol></li></ol>
+            </div>
+          
+          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在前篇中，我们已经了解了redis的字符串了，接下来让我们继续学习Redis的数据结构——哈希（Hash）类型。</p>
+<a id="more"></a>
+
+<h3 id="数据结构——哈希（hash）"><a href="#数据结构——哈希（hash）" class="headerlink" title="数据结构——哈希（hash）"></a>数据结构——哈希（hash）</h3><h4 id="什么是哈希（hash）？"><a href="#什么是哈希（hash）？" class="headerlink" title="什么是哈希（hash）？"></a>什么是哈希（hash）？</h4><p>如果你是Java、Python的工程师，相信你对键值（key-value）对很熟悉，在redis中hash就是一个键值对结构的数据类型，即field-value，一个hash由一个或多个field-value键值对组成。</p>
+<img src="/2020/02/02/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C-%E5%93%88%E5%B8%8C/hash1.png" class="" title="hash_teach">
+
+<h4 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h4><h5 id="1-设置值"><a href="#1-设置值" class="headerlink" title="1. 设置值"></a>1. 设置值</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hset key field value</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-获取值"><a href="#2-获取值" class="headerlink" title="2. 获取值"></a>2. 获取值</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hget key field</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-删除field"><a href="#3-删除field" class="headerlink" title="3. 删除field"></a>3. 删除field</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdel key field [field...]</span><br></pre></td></tr></table></figure>
+
+<h5 id="4-计算field个数"><a href="#4-计算field个数" class="headerlink" title="4. 计算field个数"></a>4. 计算field个数</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hlen key</span><br></pre></td></tr></table></figure>
+
+<h5 id="5-批量获取field-value"><a href="#5-批量获取field-value" class="headerlink" title="5. 批量获取field-value"></a>5. 批量获取field-value</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hmget key field [field...]</span><br></pre></td></tr></table></figure>
+
+<h5 id="6-批量设置field-value"><a href="#6-批量设置field-value" class="headerlink" title="6. 批量设置field-value"></a>6. 批量设置field-value</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hmset key field value[field value...]</span><br></pre></td></tr></table></figure>
+
+<h5 id="7-判断field是否存在"><a href="#7-判断field是否存在" class="headerlink" title="7. 判断field是否存在"></a>7. 判断field是否存在</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexists key field</span><br></pre></td></tr></table></figure>
+
+<h5 id="8-获取所有field"><a href="#8-获取所有field" class="headerlink" title="8. 获取所有field"></a>8. 获取所有field</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hkeys key</span><br></pre></td></tr></table></figure>
+
+<h5 id="9-获取所有value"><a href="#9-获取所有value" class="headerlink" title="9. 获取所有value"></a>9. 获取所有value</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hvals key</span><br></pre></td></tr></table></figure>
+
+<h5 id="10-获取所有field-value"><a href="#10-获取所有field-value" class="headerlink" title="10. 获取所有field-value"></a>10. 获取所有field-value</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hgetall key</span><br></pre></td></tr></table></figure>
+
+<h5 id="11-自增-field"><a href="#11-自增-field" class="headerlink" title="11. 自增 field"></a>11. 自增 field</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hincrby key field</span><br></pre></td></tr></table></figure>
+
+<h5 id="12-自增-field-float"><a href="#12-自增-field-float" class="headerlink" title="12. 自增 field (float)"></a>12. 自增 field (float)</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hincrbyfloat key field</span><br></pre></td></tr></table></figure>
+<h5 id="13-计算value字符串长度"><a href="#13-计算value字符串长度" class="headerlink" title="13. 计算value字符串长度"></a>13. 计算value字符串长度</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hstrlen key field</span><br></pre></td></tr></table></figure>
+
+<h4 id="内部编码"><a href="#内部编码" class="headerlink" title="内部编码"></a>内部编码</h4><ol>
+<li>ziplist（压缩列表）：当哈希类型中field个数小于<strong>hash-max-ziplist-entries</strong>（默认512个）配置时并且所有值小于<strong>hash-max-ziplist-value</strong>（默认64Bytes）使用ziplist编码，多个元素连续存储，所有ziplist编码更加紧凑，对比hashtable更加节省内存，但读写效率相对降低。</li>
+<li>hashtable（哈希表）：当哈希类型不符合ziplist的存储要求时，则会转换编码类型为hashtable，hashtable的读写性能更好，读写时间复杂度为O(1)。</li>
+</ol>
+<h4 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h4><ol>
+<li>缓存读多写少的数据查询记录</li>
+</ol>
+
+        
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="http://blog.chingk.com/2020/02/02/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C-%E5%93%88%E5%B8%8C/" data-id="ckc3kf2f700033cwbam86g1j5" class="article-share-link">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/redis/" rel="tag">redis</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/01/25/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84(%E4%B8%80)%E5%AD%97%E7%AC%A6%E4%B8%B2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">Redis学习笔记(二)：redis的数据结构(一)字符串</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+      
+      <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/centos/" rel="tag">centos</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/freeMarker/" rel="tag">freeMarker</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/centos/" style="font-size: 10px;">centos</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/freeMarker/" style="font-size: 15px;">freeMarker</a> <a href="/tags/java/" style="font-size: 15px;">java</a> <a href="/tags/mybatis/" style="font-size: 15px;">mybatis</a> <a href="/tags/redis/" style="font-size: 20px;">redis</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/02/02/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C-%E5%93%88%E5%B8%8C/">Redis学习笔记(二)：redis的数据结构(二)哈希</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/25/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84(%E4%B8%80)%E5%AD%97%E7%AC%A6%E4%B8%B2/">Redis学习笔记(二)：redis的数据结构(一)字符串</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/20/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%80-%EF%BC%9A%E5%88%9D%E8%AF%86redis/">Redis学习笔记(一)：初识redis</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/20/Centos%E7%9A%84docker%E5%AE%89%E8%A3%85/">Centos的docker安装</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/28/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AFTL%E8%AF%AD%E6%B3%95%E7%AF%87/">实现一个代码自动生成（二）：FTL语法篇</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">友情链接</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="https://blog.chingk.com" target="_blank">本站</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+      
+    </div>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 ChingKwok<br>
+      Powered by <a href="//hexo.io/" target="_blank">Hexo</a>
+      .
+      Theme by <a href="https://github.com/xiangming/landscape-plus" target="_blank">Landscape-plus</a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">home</a>
+  
+    <a href="/archives" class="mobile-nav-link">archives</a>
+  
+    <a href="/tags" class="mobile-nav-link">tags</a>
+  
+    <a href="/categories" class="mobile-nav-link">categories</a>
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+  <!-- totop start -->
+<div id="totop">
+<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+</div>
+
+<!-- totop end -->
+
+
+<!-- 百度分享 start -->
+
+<!-- 百度分享 end -->
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+</div>
+</body>
+</html>

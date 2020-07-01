@@ -1,0 +1,309 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>实现一个代码自动生成（一）：模板引擎Freemarker使用 | ChingKwok的后端博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言在现在的开发当中，代码生成已经是必不可少的一个功能，每个公司都会有自己的一套定制的项目骨架，而实现代码自动生成，模板引擎是必不可少的，所以在这篇博客中，将会讲解freemarker在代码生成中所扮演的角色，以及介绍如何在Java项目中使用它！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实现一个代码自动生成（一）：模板引擎Freemarker使用">
+<meta property="og:url" content="http://blog.chingk.com/2019/06/25/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8EFreemarker%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="ChingKwok的后端博客">
+<meta property="og:description" content="前言在现在的开发当中，代码生成已经是必不可少的一个功能，每个公司都会有自己的一套定制的项目骨架，而实现代码自动生成，模板引擎是必不可少的，所以在这篇博客中，将会讲解freemarker在代码生成中所扮演的角色，以及介绍如何在Java项目中使用它！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.chingk.com/2019/06/25/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8EFreemarker%E4%BD%BF%E7%94%A8/auto-1.png">
+<meta property="article:published_time" content="2019-06-25T02:35:14.000Z">
+<meta property="article:modified_time" content="2020-07-01T15:52:10.012Z">
+<meta property="article:author" content="ChingKwok">
+<meta property="article:tag" content="freeMarker">
+<meta property="article:tag" content="mybatis">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://blog.chingk.com/2019/06/25/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8EFreemarker%E4%BD%BF%E7%94%A8/auto-1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="ChingKwok的后端博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+<body>
+<div id="container">
+  <div id="wrap">
+    <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ChingKwok的后端博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">home</a>
+        
+          <a class="main-nav-link" href="/archives">archives</a>
+        
+          <a class="main-nav-link" href="/tags">tags</a>
+        
+          <a class="main-nav-link" href="/categories">categories</a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//www.baidu.com/baidu" method="get" accept-charset="utf-8" class="search-form">
+          <input type="search" name="word" maxlength="20" class="search-form-input" placeholder="Search">
+          <input type="submit" value="" class="search-form-submit">
+          <input name=tn type=hidden value="bds">
+          <input name=cl type=hidden value="3">
+          <input name=ct type=hidden value="2097152">
+          <input type="hidden" name="si" value="blog.chingk.com">
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+    <div class="outer">
+      <section id="main"><article id="post-实现一个代码自动生成（一）：模板引擎Freemarker使用" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/25/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8EFreemarker%E4%BD%BF%E7%94%A8/" class="article-date">
+  <time datetime="2019-06-25T02:35:14.000Z" itemprop="datePublished">2019-06-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      实现一个代码自动生成（一）：模板引擎Freemarker使用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+            <div id="toc" class="toc-article">
+              <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#模板引擎FreeMarker"><span class="toc-number">2.</span> <span class="toc-text">模板引擎FreeMarker</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#模板引擎是什么？"><span class="toc-number">2.0.1.</span> <span class="toc-text">模板引擎是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FreeMarker是什么？"><span class="toc-number">2.0.2.</span> <span class="toc-text">FreeMarker是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#FreeMarker如何使用？"><span class="toc-number">2.0.3.</span> <span class="toc-text">FreeMarker如何使用？</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#加入依赖"><span class="toc-number">2.0.3.1.</span> <span class="toc-text">加入依赖</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#创建Configuration实例"><span class="toc-number">2.0.3.2.</span> <span class="toc-text">创建Configuration实例</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#创建数据模型"><span class="toc-number">2.0.3.3.</span> <span class="toc-text">创建数据模型</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#获取模板"><span class="toc-number">2.0.3.4.</span> <span class="toc-text">获取模板</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#合并模板和数据"><span class="toc-number">2.0.3.5.</span> <span class="toc-text">合并模板和数据</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#整合代码"><span class="toc-number">2.0.3.6.</span> <span class="toc-text">整合代码</span></a></li></ol></li></ol></li></ol></li></ol>
+            </div>
+          
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在现在的开发当中，代码生成已经是必不可少的一个功能，每个公司都会有自己的一套定制的项目骨架，而实现代码自动生成，模板引擎是必不可少的，所以在这篇博客中，将会讲解freemarker在代码生成中所扮演的角色，以及介绍如何在Java项目中使用它！</p>
+<a id="more"></a>
+
+<h2 id="模板引擎FreeMarker"><a href="#模板引擎FreeMarker" class="headerlink" title="模板引擎FreeMarker"></a>模板引擎FreeMarker</h2><h4 id="模板引擎是什么？"><a href="#模板引擎是什么？" class="headerlink" title="模板引擎是什么？"></a>模板引擎是什么？</h4><p>模板引擎一般指将通用代码和业务数据分离开来的技术，该技术有多种实现，如置换型、解释型、编译型，如JSP就是其中一种应用非常广泛的模板引擎技术（其本质是一个Servlet，用来生成Html文件）</p>
+<h4 id="FreeMarker是什么？"><a href="#FreeMarker是什么？" class="headerlink" title="FreeMarker是什么？"></a>FreeMarker是什么？</h4><p>官方文档：</p>
+<blockquote>
+<p>FreeMarker 是一款 模板引擎： 即一种基于模板和要改变的数据， 并用来生成输出文本(HTML网页，电子邮件，配置文件，源代码等)的通用工具。 它不是面向最终用户的，而是一个Java类库，是一款程序员可以嵌入他们所开发产品的组件。<br>模板编写为FreeMarker Template Language (FTL)。它是简单的，专用的语言， 不是 像PHP那样成熟的编程语言。 那就意味着要准备数据在真实编程语言中来显示，比如数据库查询和业务运算， 之后模板显示已经准备好的数据。在模板中，你可以专注于如何展现数据， 而在模板之外可以专注于要展示什么数据。</p>
+</blockquote>
+<p><strong>简单来讲就是FreeMarker把目标文本分解成了Model、View，然后引擎自身充当了Controller，也就是常见的MVC模式。<br>FreeMarker通过预先定义好的模板文件（ftl文件），再把如Java对象中的属性进行填充，最后输出目标文件。</strong></p>
+<img src="/2019/06/25/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8EFreemarker%E4%BD%BF%E7%94%A8/auto-1.png" class="" title="img1">
+
+<h4 id="FreeMarker如何使用？"><a href="#FreeMarker如何使用？" class="headerlink" title="FreeMarker如何使用？"></a>FreeMarker如何使用？</h4><p>FreeMarker不像JSP，需要绑定Servlet才能使用，在Java中我们只需要导入对应的Jar包就可以使用了！接下来会介绍在<strong>Maven项目</strong>中如何使用FreeMarker。</p>
+<h5 id="加入依赖"><a href="#加入依赖" class="headerlink" title="加入依赖"></a>加入依赖</h5><p>首先我们先在<strong>pom.xml</strong>中加入FreeMarker的依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span>   </span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.freemarker<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span>    </span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>freemarker<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span>    </span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.23<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="创建Configuration实例"><a href="#创建Configuration实例" class="headerlink" title="创建Configuration实例"></a>创建Configuration实例</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// step1 创建freemarker.template.Configuration配置实例</span></span><br><span class="line">Configuration configuration = <span class="keyword">new</span> Configuration(Configuration.VERSION_2_3_22);</span><br></pre></td></tr></table></figure>
+<h5 id="创建数据模型"><a href="#创建数据模型" class="headerlink" title="创建数据模型"></a>创建数据模型</h5><p>我们可以使用一个String，或者以下的类型的实例充当数据模型，在这里使用了一个<strong>自定义的Bean</strong>。</p>
+<blockquote>
+<p>使用 java.lang.String 来构建字符串。<br>使用 java.lang.Number 来派生数字类型。<br>使用 java.lang.Boolean 来构建布尔值。<br>使用 java.util.List 或Java数组来构建序列。<br>使用 java.util.Map 来构建哈希表。<br>使用自定义的bean类来构建哈希表，bean中的项和bean的属性对应。比如， product 的 price 属性 (getProperty())可以通过 product.price 获取。(bean的action也可以通过这种方式拿到； 要了解更多可以参看 这里)</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个root hash对象，用来装载数据对象</span></span><br><span class="line">Map&lt;String, Object&gt; root = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"><span class="comment">//将数据对象装载入hash中</span></span><br><span class="line">root.put(<span class="string">"user"</span>, <span class="keyword">new</span> User(<span class="string">"Joe"</span>,<span class="number">17</span>));</span><br></pre></td></tr></table></figure>
+<p>使用到的自定义的User类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//User</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;    </span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;    </span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    User(String name, <span class="keyword">int</span> age) &#123;</span><br><span class="line">    <span class="keyword">this</span>.age = age;</span><br><span class="line">    <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个模板文件(.ftl文件)</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">--!</span> <span class="attr">demo.ftl</span> <span class="attr">--</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">user</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>user.name<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">age</span>&gt;</span>user.age<span class="tag">&lt;/<span class="name">age</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h5 id="获取模板"><a href="#获取模板" class="headerlink" title="获取模板"></a>获取模板</h5><p>获取之前我们创建的demo.ftl模板文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Template temp = cfg.getTemplate(<span class="string">"demo.ftl"</span>);</span><br></pre></td></tr></table></figure>
+<h5 id="合并模板和数据"><a href="#合并模板和数据" class="headerlink" title="合并模板和数据"></a>合并模板和数据</h5><p>我们在了解FreeMarker的开始就知道，数据模型+模板=目标输出，在最后，我们只需要将获取到的模板，和自定义的root hash对象进行绑定，这里会使用到Template的process()方法；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建输出流，定义输出的文件</span></span><br><span class="line">File docFile = <span class="keyword">new</span> File(<span class="string">"demo.xml"</span>);</span><br><span class="line">out = <span class="keyword">new</span> BufferedWriter(<span class="keyword">new</span> OutputStreamWriter(<span class="keyword">new</span> FileOutputStream(docFile)));</span><br><span class="line"><span class="comment">//process方法将数据与模板进行绑定，输出到out输出流</span></span><br><span class="line">temp.process(root, out);</span><br></pre></td></tr></table></figure>
+
+<h5 id="整合代码"><a href="#整合代码" class="headerlink" title="整合代码"></a>整合代码</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建freemarker.template.Configuration配置实例</span></span><br><span class="line">Configuration configuration = <span class="keyword">new</span> Configuration(Configuration.VERSION_2_3_22);</span><br><span class="line"><span class="comment">//创建一个root hash对象，用来装载数据对象</span></span><br><span class="line">Map&lt;String, Object&gt; root = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"><span class="comment">//将数据对象装载入hash中</span></span><br><span class="line">root.put(<span class="string">"user"</span>, <span class="keyword">new</span> User(<span class="string">"Joe"</span>,<span class="number">17</span>));</span><br><span class="line"><span class="comment">//获取模板</span></span><br><span class="line">Template temp = cfg.getTemplate(<span class="string">"demo.ftl"</span>);</span><br><span class="line"><span class="comment">//创建输出流，定义输出的文件</span></span><br><span class="line">File docFile = <span class="keyword">new</span> File(<span class="string">"demo.xml"</span>);</span><br><span class="line">out = <span class="keyword">new</span> BufferedWriter(<span class="keyword">new</span> OutputStreamWriter(<span class="keyword">new</span> FileOutputStream(docFile)));</span><br><span class="line"><span class="comment">//process方法将数据与模板进行绑定，输出到out输出流</span></span><br><span class="line">temp.process(root, out);</span><br></pre></td></tr></table></figure>
+        
+    </div>
+    <footer class="article-footer">
+      
+        <a data-url="http://blog.chingk.com/2019/06/25/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8EFreemarker%E4%BD%BF%E7%94%A8/" data-id="ckc3kf2f800043cwb8yd46imo" class="article-share-link">分享到</a>
+      
+
+      
+
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/freeMarker/" rel="tag">freeMarker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/06/28/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AFTL%E8%AF%AD%E6%B3%95%E7%AF%87/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">
+        
+          实现一个代码自动生成（二）：FTL语法篇
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+      
+      <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/centos/" rel="tag">centos</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/freeMarker/" rel="tag">freeMarker</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/centos/" style="font-size: 10px;">centos</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/freeMarker/" style="font-size: 15px;">freeMarker</a> <a href="/tags/java/" style="font-size: 15px;">java</a> <a href="/tags/mybatis/" style="font-size: 15px;">mybatis</a> <a href="/tags/redis/" style="font-size: 20px;">redis</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">近期文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/02/02/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C-%E5%93%88%E5%B8%8C/">Redis学习笔记(二)：redis的数据结构(二)哈希</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/25/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84(%E4%B8%80)%E5%AD%97%E7%AC%A6%E4%B8%B2/">Redis学习笔记(二)：redis的数据结构(一)字符串</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/20/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%80-%EF%BC%9A%E5%88%9D%E8%AF%86redis/">Redis学习笔记(一)：初识redis</a>
+          </li>
+        
+          <li>
+            <a href="/2019/11/20/Centos%E7%9A%84docker%E5%AE%89%E8%A3%85/">Centos的docker安装</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/28/%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E4%BB%A3%E7%A0%81%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AFTL%E8%AF%AD%E6%B3%95%E7%AF%87/">实现一个代码自动生成（二）：FTL语法篇</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">友情链接</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="https://blog.chingk.com" target="_blank">本站</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+      
+    </div>
+    <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 ChingKwok<br>
+      Powered by <a href="//hexo.io/" target="_blank">Hexo</a>
+      .
+      Theme by <a href="https://github.com/xiangming/landscape-plus" target="_blank">Landscape-plus</a>
+    </div>
+  </div>
+</footer>
+  </div>
+  <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">home</a>
+  
+    <a href="/archives" class="mobile-nav-link">archives</a>
+  
+    <a href="/tags" class="mobile-nav-link">tags</a>
+  
+    <a href="/categories" class="mobile-nav-link">categories</a>
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+  <!-- totop start -->
+<div id="totop">
+<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+</div>
+
+<!-- totop end -->
+
+
+<!-- 百度分享 start -->
+
+<!-- 百度分享 end -->
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+</div>
+</body>
+</html>
