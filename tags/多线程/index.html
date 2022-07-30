@@ -1,99 +1,228 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>标签: 多线程 | ChingKwok的书斋</title><meta name="description"><meta name="author" content="ChingKwok"><meta name="copyright" content="ChingKwok"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><meta name="google-site-verification" content="Re4U4UpYHA7F_Og7PltHgkwTqrrr6UB33Fq4F82dlPI"/><meta name="baidu-site-verification" content="8k6CfmzW23"/><meta property="og:type" content="website"><meta property="og:title" content="标签: 多线程"><meta property="og:url" content="http://yoursite.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"><meta property="og:site_name" content="ChingKwok的书斋"><meta property="og:description"><meta property="og:image" content="http://yoursite.com/img/avatar.jpeg"><meta property="article:published_time" content="2022-07-30T10:17:21.004Z"><meta property="article:modified_time" content="2022-07-30T10:17:21.004Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
-  document.documentElement.setAttribute('data-theme', 'dark')
-  if (document.querySelector('meta[name="theme-color"]') !== null) {
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
-  }
-}
-var activateLightMode = function () {
-  document.documentElement.setAttribute('data-theme', 'light')
-  if (document.querySelector('meta[name="theme-color"]') !== null) {
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
-  }
-}
+<!DOCTYPE html>
+<html  lang="zh-CN" >
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <title>标签: 多线程 | ChingKwok的书斋</title>
+    <meta property="og:type" content="website">
+<meta property="og:title" content="ChingKwok的书斋">
+<meta property="og:url" content="http://yoursite.com/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/index.html">
+<meta property="og:site_name" content="ChingKwok的书斋">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="ChingKwok">
+<meta name="twitter:card" content="summary">
 
-var getCookies = function (name) {
-  const value = `; ${document.cookie}`
-  const parts = value.split(`; ${name}=`)
-  if (parts.length === 2) return parts.pop().split(';').shift()
-}
+    
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
 
-var autoChangeMode = 'false'
-var t = getCookies('theme')
-if (autoChangeMode === '1') {
-  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
-  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
-  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+    
+<link rel="stylesheet" href="/css/common.min.css">
 
-  if (t === undefined) {
-    if (isLightMode) activateLightMode()
-    else if (isDarkMode) activateDarkMode()
-    else if (isNotSpecified || hasNoSupport) {
-      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
-      var now = new Date()
-      var hour = now.getHours()
-      var isNight = hour <= 6 || hour >= 18
-      isNight ? activateDarkMode() : activateLightMode()
-    }
-    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
-      if (Cookies.get('theme') === undefined) {
-        e.matches ? activateDarkMode() : activateLightMode()
-      }
-    })
-  } else if (t === 'light') activateLightMode()
-  else activateDarkMode()
-} else if (autoChangeMode === '2') {
-  now = new Date()
-  hour = now.getHours()
-  isNight = hour <= 6 || hour >= 18
-  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
-  else if (t === 'light') activateLightMode()
-  else activateDarkMode()
-} else {
-  if (t === 'dark') activateDarkMode()
-  else if (t === 'light') activateLightMode()
-}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
-  root: '/',
-  algolia: undefined,
-  localSearch: undefined,
-  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
-  copy: {
-    success: '复制成功',
-    error: '复制错误',
-    noSupport: '浏览器不支持'
-  },
-  bookmark: {
-    message_prev: '按',
-    message_next: '键将本页加入书签'
-  },
-  runtime_unit: '天',
-  runtime: false,
-  copyright: undefined,
-  ClickShowText: undefined,
-  medium_zoom: false,
-  fancybox: true,
-  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
-  justifiedGallery: {
-    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
-    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
-  },
-  baiduPush: false,
-  highlightCopy: true,
-  highlightLang: true,
-  isPhotoFigcaption: false,
-  islazyload: true,
-  isanchor: false    
-}</script><script>var GLOBAL_CONFIG_SITE = { 
-  isPost: false,
-  isHome: false,
-  isHighlightShrink: false,
-  isSidebar: false
-  }</script><noscript><style>
-#nav {
-  opacity: 1
-}
-.justified-gallery img{
-  opacity: 1
-}
-</style></noscript><meta name="generator" content="Hexo 4.2.1"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/img/avatar.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">34</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">19</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于博主</span></a></div></div></div></div><div id="body-wrap"><header class="not-index-bg" id="page-header" style="background-image: url(https://image.chingk.com/img/2020/07/nyanCat2.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">ChingKwok的书斋</a></span><span class="pull-right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于博主</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="page_site-info"><h1 id="site_title">多线程</h1></div></header><main class="layout_page" id="content-inner"><div id="tag"><div class="article-sort-title">标签 - 多线程</div><div class="article-sort"><div class="article-sort-item year">2020</div><div class="article-sort-item"><div class="article-sort-img"><a class="article-sort-item__img" href="/2020/07/21/Java%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96/"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="Java的线程安全和锁优化" onerror="this.onerror=null;this.src='/img/404.jpg'"></a></div><div class="article-sort-post"><a class="article-sort-item__post" href="/2020/07/21/Java%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96/"><i class="far fa-calendar-alt"></i><time class="article-sort-item__time" title="发表于 2020-07-21 11:13:02">2020-07-21</time><div class="article-sort-item__title">Java的线程安全和锁优化</div></a></div></div><div class="article-sort-item"><div class="article-sort-img"><a class="article-sort-item__img" href="/2020/07/18/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%9B%9B%E7%A7%8D%E9%A2%84%E8%AE%BE%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F%E5%92%8C%E5%8E%9F%E7%94%9F%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F/"><img src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="Java线程池的四种预设创建方式和原生创建方式" onerror="this.onerror=null;this.src='/img/404.jpg'"></a></div><div class="article-sort-post"><a class="article-sort-item__post" href="/2020/07/18/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%9B%9B%E7%A7%8D%E9%A2%84%E8%AE%BE%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F%E5%92%8C%E5%8E%9F%E7%94%9F%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F/"><i class="far fa-calendar-alt"></i><time class="article-sort-item__time" title="发表于 2020-07-18 12:11:46">2020-07-18</time><div class="article-sort-item__title">Java线程池的四种预设创建方式和原生创建方式</div></a></div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/img/avatar.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">ChingKwok</div><div class="author-info__description">热爱生活 · 坚持运动 · 效率学习</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives"><div class="headline">文章</div><div class="length_num">34</div></a></div><div class="card-info-data-item is-center">      <a href="/tags"><div class="headline">标签</div><div class="length_num">19</div></a></div></div><div class="card-info-bookmark is-center"><button class="button--animated" id="bookmark-it" title="加入书签"><i class="fas fa-bookmark"></i><span>加入书签</span></button></div><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:1040802287@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">Redis & Jvm 学习笔记持续更新中，欢迎收藏订阅</div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-recent-item"><div class="aside-recent-post"><a href="/2022/06/05/%E6%9C%AC%E5%9C%B0%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/06/05/%E6%9C%AC%E5%9C%B0%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/" title="本地事务实现笔记">本地事务实现笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-06-05 17:21:40">2022-06-05</time></div></a></div><div class="aside-recent-post"><a href="/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/" title="MySQL底层：InnoDB记录结构笔记">MySQL底层：InnoDB记录结构笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-29 17:18:19">2022-05-29</time></div></a></div><div class="aside-recent-post"><a href="/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/" title="JVM垃圾回收器G1对比CMS笔记">JVM垃圾回收器G1对比CMS笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-25 16:46:31">2022-05-25</time></div></a></div><div class="aside-recent-post"><a href="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Redis数据结构源码学习笔记">Redis数据结构源码学习笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-01 20:10:34">2022-05-01</time></div></a></div><div class="aside-recent-post"><a href="/2022/04/22/Redis-IO%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/04/22/Redis-IO%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" title="Redis IO线程模型">Redis IO线程模型</div><time class="aside-post_meta post-meta__date" title="发表于 2022-04-22 17:55:10">2022-04-22</time></div></a></div></div></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/TCP/" style="font-size: 16px; color: #999">TCP</a> <a href="/tags/centos/" style="font-size: 17.2px; color: #999ca1">centos</a> <a href="/tags/docker/" style="font-size: 16px; color: #999">docker</a> <a href="/tags/freeMarker/" style="font-size: 17.2px; color: #999ca1">freeMarker</a> <a href="/tags/git/" style="font-size: 16px; color: #999">git</a> <a href="/tags/hotspot/" style="font-size: 16px; color: #999">hotspot</a> <a href="/tags/java/" style="font-size: 22px; color: #99a9bf">java</a> <a href="/tags/jvm/" style="font-size: 22px; color: #99a9bf">jvm</a> <a href="/tags/mybatis/" style="font-size: 17.2px; color: #999ca1">mybatis</a> <a href="/tags/mysql/" style="font-size: 17.2px; color: #999ca1">mysql</a> <a href="/tags/rabbitmq/" style="font-size: 16px; color: #999">rabbitmq</a> <a href="/tags/redis/" style="font-size: 20.8px; color: #99a6b7">redis</a> <a href="/tags/spring/" style="font-size: 19.6px; color: #99a3b0">spring</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 17.2px; color: #999ca1">多线程</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 16px; color: #999">消息队列</a> <a href="/tags/%E6%BA%90%E7%A0%81/" style="font-size: 18.4px; color: #999fa8">源码</a> <a href="/tags/%E7%BA%BF%E7%A8%8B/" style="font-size: 16px; color: #999">线程</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 16px; color: #999">设计模式</a> <a href="/tags/%E9%94%81/" style="font-size: 16px; color: #999">锁</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/06/"><span class="card-archive-list-date">六月 2022</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/05/"><span class="card-archive-list-date">五月 2022</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/04/"><span class="card-archive-list-date">四月 2022</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/07/"><span class="card-archive-list-date">七月 2021</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/06/"><span class="card-archive-list-date">六月 2021</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/05/"><span class="card-archive-list-date">五月 2021</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/03/"><span class="card-archive-list-date">三月 2021</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/02/"><span class="card-archive-list-date">二月 2021</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item more is-center"><a class="card-archive-list-link-more" href="/archives">
-              <span>查看更多</span><i class="fas fa-angle-right"  ></i></a></li></ul></div></div><div class="card-widget card-webinfo"><div class="card-content"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="webinfo-article-name">文章数目 :</div><div class="webinfo-article-count">34</div></div></div></div></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By ChingKwok</div><div class="framework-info"><span>驱动 </span><a href="https://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly" target="_blank" rel="noopener"><span>Butterfly</span></a></div><div class="icp"><a><img class="icp-icon" src="/img/icp.png"/><span>粤ICP备20052429号</span></a></div></div></footer></div><section class="rightside" id="rightside"><div id="rightside-config-hide"><button class="translate_chn_to_cht" id="translateLink" title="简繁转换">繁</button><button id="darkmode" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script></body></html>
+
+
+    
+    
+    
+<link rel="stylesheet" href="/css/iconfont.min.css">
+
+    
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+    <body>
+        <header class="header header-fixture">
+    <div class="profile-search-wrap flex sm:block">
+        
+        
+        <div class="profile sm:text-center md:px-1 lg:px-3 sm:pb-4 sm:pt-6">
+            <a id="avatar" role="link" href="https://github.com/fengkx" class="inline-block lg:w-16 lg:h-16 w-8 h-8 m-2" target="_blank" rel="noopener" rel="noreferrer" >
+                <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
+            </a>
+            <h2 id="name" class="hidden lg:block">GuoChing</h2>
+            <h3 id="title" class="hidden lg:block">在广州的一位萌新的Web开发</h3>
+            
+            <small id="location" class="hidden lg:block">
+                <i class="iconfont icon-map-icon"></i>
+                广州
+            </small>
+            
+        </div>
+        
+        
+<div class="search flex-1 flex lg:inline-block sm:hidden lg:px-4 lg:mt-2 lg:mb-4 lg:w-full">
+    <form id="search-form" class="my-auto flex-1 lg:border lg:border-solid lg:border-gray-200">
+        <div class="input-group table bg-gray-100 lg:bg-white w-full">
+            <input id="search-input" type="text" placeholder="搜索" class="inline-block w-full bg-gray-100 lg:bg-white p-1">
+            <span class="table-cell">
+                <button name="search tigger button" disabled>
+                    <i class="iconfont icon-search m-2"></i>
+                </button>
+            </span>
+        </div>
+    </form>
+        
+<div id="content-json" data-placeholder="搜索" class="invisible hidden">/content.json</div>
+<script id="search-teamplate" type="text/html" data-path="/content.json">
+    <div>
+        <div class="search-header bg-gray-400">
+            <input id="actual-search-input" model="keyword" ref="input" class="inline-block w-full h-10 px-2 py-1" placeholder="搜索" type="text">
+        </div>
+        <div class="search-result bg-gray-200">
+            {{#each searchPosts}}
+            <a href="/{{ path }}" class="result-item block px-2 pb-3 mb-1 pt-1 hover:bg-indigo-100">
+                <i class="iconfont icon-file"></i>
+                <h1 class="result-title inline font-medium text-lg">{{ title }}</h1>
+                <p class="result-content text-gray-600 text-sm">{{{ text }}}</p>
+            </a>
+            {{/each}}
+        </div>
+    </div>
+</script>
+
+</div>
+
+
+        <button name="menu toogle button" id="menu-toggle-btn" class="block sm:hidden p-3" role="button" aria-expanded="false">
+            <i class="iconfont icon-hamburger"></i>
+        </button>
+    </div>
+    <nav id="menu-nav" class="hidden sm:flex flex-col">
+        
+        
+            <div class="menu-item menu-home" role="menuitem">
+                <a href="/.">
+                    <i class="iconfont icon-home" aria-hidden="true"></i>
+                    <span class="menu-title">首页</span>
+                </a>
+            </div>
+        
+        
+            <div class="menu-item menu-about" role="menuitem">
+                <a href="/about">
+                    <i class="iconfont icon-cup" aria-hidden="true"></i>
+                    <span class="menu-title">关于</span>
+                </a>
+            </div>
+        
+        
+<div class="social-links flex sm:flex-col lg:hidden mt-5">
+    
+        <span class="social-item text-center">
+            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
+                <i class="iconfont social-icon icon-github"></i>
+                <span class="menu-title hidden lg:inline">menu.github</span>
+            </a>
+        </span>
+    
+        <span class="social-item text-center">
+            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
+                <i class="iconfont social-icon icon-telegram"></i>
+                <span class="menu-title hidden lg:inline">menu.telegram</span>
+            </a>
+        </span>
+    
+        <span class="social-item text-center">
+            <a href="https://twitter.com/example" target="_blank" rel="noopener">
+                <i class="iconfont social-icon icon-twitter"></i>
+                <span class="menu-title hidden lg:inline">menu.twitter</span>
+            </a>
+        </span>
+    
+        <span class="social-item text-center">
+            <a href="/atom.xml">
+                <i class="iconfont social-icon icon-rss"></i>
+                <span class="menu-title hidden lg:inline">menu.rss</span>
+            </a>
+        </span>
+    
+</div>
+
+
+    </nav>
+</header>
+
+        <section class="main-section">
+            <main class="flex-1 px-4 py-14 md:px-5 lg:px-8 lg:py-4 relative min-h-screen">
+    <article class="content article article-archives article-type-list" itemscope="">
+        <header class="article-header">
+            <h1 itemprop="title">tag : 多线程</h1>
+            <p class="text-gray-600">共 2 篇文章</p>
+        </header>
+        <div class="article-body">
+            
+    
+        <section class="year-archive">
+    <header>
+        <h1><a >2020</a></h1>
+    </header>
+    <div class="archive-content">
+        
+            <a href="/2020/07/21/Java%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96/" class="post-item">
+                <div class="post-time">07-21</div>
+                <div class="post-title">Java的线程安全和锁优化</div>
+            </a>
+        
+            <a href="/2020/07/18/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%9B%9B%E7%A7%8D%E9%A2%84%E8%AE%BE%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F%E5%92%8C%E5%8E%9F%E7%94%9F%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F/" class="post-item">
+                <div class="post-time">07-18</div>
+                <div class="post-title">Java线程池的四种预设创建方式和原生创建方式</div>
+            </a>
+        
+    </div>
+</section>
+
+    
+
+
+        </div>
+    </article>
+    
+
+</main>
+
+        </section>
+        <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
+    
+    <div class="footer-social-links">
+        
+            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
+                <i class="iconfont icon-github"></i>
+            </a>
+        
+            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
+                <i class="iconfont icon-telegram"></i>
+            </a>
+        
+            <a href="https://twitter.com/example" target="_blank" rel="noopener">
+                <i class="iconfont icon-twitter"></i>
+            </a>
+        
+            <a href="/atom.xml">
+                <i class="iconfont icon-rss"></i>
+            </a>
+        
+    </div>
+    
+    
+</footer>
+
+        <div id="mask" class="hidden mask fixed inset-0 bg-gray-900 opacity-75 z-40"></div>
+        <div id="search-view-container" class="hidden shadow-xl"></div>
+        
+<script src="/js/dom-event.min.js"></script>
+
+
+
+<script src="/js/local-search.min.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/lightgallery.js@1.1.3/dist/js/lightgallery.min.js"></script>
+    
+<script src="/js/light-gallery.min.js"></script>
+
+
+
+
+
+
+    </body>
+</html>

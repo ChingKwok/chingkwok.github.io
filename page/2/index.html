@@ -1,186 +1,729 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ChingKwok的书斋</title><meta name="description"><meta name="author" content="ChingKwok"><meta name="copyright" content="ChingKwok"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/page/2/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><meta name="google-site-verification" content="Re4U4UpYHA7F_Og7PltHgkwTqrrr6UB33Fq4F82dlPI"/><meta name="baidu-site-verification" content="8k6CfmzW23"/><meta property="og:type" content="website"><meta property="og:title" content="ChingKwok的书斋"><meta property="og:url" content="http://yoursite.com/page/2/"><meta property="og:site_name" content="ChingKwok的书斋"><meta property="og:description"><meta property="og:image" content="http://yoursite.com/img/avatar.jpeg"><meta property="article:published_time" content="2022-07-30T10:17:20.990Z"><meta property="article:modified_time" content="2022-07-30T10:17:20.990Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
-  document.documentElement.setAttribute('data-theme', 'dark')
-  if (document.querySelector('meta[name="theme-color"]') !== null) {
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
-  }
-}
-var activateLightMode = function () {
-  document.documentElement.setAttribute('data-theme', 'light')
-  if (document.querySelector('meta[name="theme-color"]') !== null) {
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
-  }
-}
+<!DOCTYPE html>
+<html  lang="zh-CN" >
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <title>ChingKwok的书斋</title>
+    <meta property="og:type" content="website">
+<meta property="og:title" content="ChingKwok的书斋">
+<meta property="og:url" content="http://yoursite.com/page/2/index.html">
+<meta property="og:site_name" content="ChingKwok的书斋">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="ChingKwok">
+<meta name="twitter:card" content="summary">
 
-var getCookies = function (name) {
-  const value = `; ${document.cookie}`
-  const parts = value.split(`; ${name}=`)
-  if (parts.length === 2) return parts.pop().split(';').shift()
-}
+    
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
 
-var autoChangeMode = 'false'
-var t = getCookies('theme')
-if (autoChangeMode === '1') {
-  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
-  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
-  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
-
-  if (t === undefined) {
-    if (isLightMode) activateLightMode()
-    else if (isDarkMode) activateDarkMode()
-    else if (isNotSpecified || hasNoSupport) {
-      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
-      var now = new Date()
-      var hour = now.getHours()
-      var isNight = hour <= 6 || hour >= 18
-      isNight ? activateDarkMode() : activateLightMode()
-    }
-    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
-      if (Cookies.get('theme') === undefined) {
-        e.matches ? activateDarkMode() : activateLightMode()
-      }
-    })
-  } else if (t === 'light') activateLightMode()
-  else activateDarkMode()
-} else if (autoChangeMode === '2') {
-  now = new Date()
-  hour = now.getHours()
-  isNight = hour <= 6 || hour >= 18
-  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
-  else if (t === 'light') activateLightMode()
-  else activateDarkMode()
-} else {
-  if (t === 'dark') activateDarkMode()
-  else if (t === 'light') activateLightMode()
-}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
-  root: '/',
-  algolia: undefined,
-  localSearch: undefined,
-  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
-  copy: {
-    success: '复制成功',
-    error: '复制错误',
-    noSupport: '浏览器不支持'
-  },
-  bookmark: {
-    message_prev: '按',
-    message_next: '键将本页加入书签'
-  },
-  runtime_unit: '天',
-  runtime: false,
-  copyright: undefined,
-  ClickShowText: undefined,
-  medium_zoom: false,
-  fancybox: true,
-  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
-  justifiedGallery: {
-    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
-    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
-  },
-  baiduPush: false,
-  highlightCopy: true,
-  highlightLang: true,
-  isPhotoFigcaption: false,
-  islazyload: true,
-  isanchor: false    
-}</script><script>var GLOBAL_CONFIG_SITE = { 
-  isPost: false,
-  isHome: true,
-  isHighlightShrink: false,
-  isSidebar: false
-  }</script><noscript><style>
-#nav {
-  opacity: 1
-}
-.justified-gallery img{
-  opacity: 1
-}
-</style></noscript><meta name="generator" content="Hexo 4.2.1"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/img/avatar.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">34</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">19</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于博主</span></a></div></div></div></div><div id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(https://image.chingk.com/img/2020/07/nyanCat2.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">ChingKwok的书斋</a></span><span class="pull-right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于博主</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="site-info"><h1 id="site_title">ChingKwok的书斋</h1><div id="site_subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="mailto:1040802287@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div id="scroll_down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout_page" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2021/06/15/JVM%E5%9F%BA%E6%9C%AC%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/" title="JVM基本调优参数">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JVM基本调优参数"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/06/15/JVM%E5%9F%BA%E6%9C%AC%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/" title="JVM基本调优参数">JVM基本调优参数</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2021-06-15 20:26:58"><i class="far fa-calendar-alt"></i>2021-06-15</time></div><div class="content">指定堆大小12345//指定堆最大-XX:Xmx1024m//指定堆初始大小-XX:Xms1024m
-
-Java方法栈指定线程的栈最大空间
-12//默认256K-XX:Xss128K
-
-影响GC因素：
-局部变量表槽位复用
-在方法体中声明的变量都会在局部变量表中，如果超过其作用域，则会被之后声明的变量复用，如果是引用类型，则会失去引用，被GC。但如果只是超过作用域但是没有被其他变量复用，则不会失去引用。
-栈内分配
-逃逸分析
-用于分析引用类型声明的变量的作用域是否会逃逸出方法体，如果作用域只在方法体内且不返回，则可以标量替换
-标量替换
-指类引用类型声明时，如果可以被
-TLAB
-TLAB（Thread Local Allocation Buffer）本地线程分配缓存，在类加载之后分配内存时，如果开启了这个选项，则可以在堆中属于线程的缓存区分配内存，不需要到共享的堆区进行内存申请，避免内存申请失败。开启了这个会使得栈内分配失效
-12345//开启TLAB-XX:+UseTLAB//关闭-XX:-UseTLAB
-
-永久代&amp;元空间永久代
-1234//指定永久代初始大小-XX:PermSiz ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2021/05/21/Springboot%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E7%AC%94%E8%AE%B0/" title="Springboot启动过程笔记">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Springboot启动过程笔记"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/05/21/Springboot%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E7%AC%94%E8%AE%B0/" title="Springboot启动过程笔记">Springboot启动过程笔记</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2021-05-21 21:04:51"><i class="far fa-calendar-alt"></i>2021-05-21</time></div><div class="content">之前看了springIOC源码，现在结合Springboot整体启动过程来看这个
-重要的时间回调机制ApplicationContextInitializer
-上下文初始化器，在创建出上下文之后被执行
-SpringApplicationRunListener
-应用启动监听器，在各个阶段的方法，在spring启动到指定时期回调
-ApplicationRunner
-CommandLineRunner
-用于自定义创建IOC容器完成后的操作，入参是命令行参数
-自定义回调机制ApplicationContextInitializer 、SpringApplicationRunListener 自定义需要在当前项目下的 META-INF/spring.factories 配置文件中加入自定义的实现类
-关键类：
-SpringApplication ：应用
-SpringApplicationContext ：应用上下文
-SpringApplicationRunListener ：应用运行监听器
-启动步骤：
-
-调用SpringApplication 的静态方法 run 方法
-
-run 方法创建 Spri ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2021/05/05/SpringAOP%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="SpringAOP源码学习笔记">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringAOP源码学习笔记"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/05/05/SpringAOP%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="SpringAOP源码学习笔记">SpringAOP源码学习笔记</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2021-05-05 09:54:04"><i class="far fa-calendar-alt"></i>2021-05-05</time></div><div class="content">SpringAOP是什么springAOP是Spring框架对aop切面编程模式的一个实现，具体来说就是通过BeanPostProcessor在SpringIOC的支持下，在Bean初始化时进行的增强。具体流程可以看我之前写的SpringIOC源码笔记。
-基于Spring1.2的aop支持：
-
-通过 DefaultAdvisorAutoProxyCreator 实现的，创建Bean过程的初始化 AbstractAutowireCapableBeanFactory#doCreateBean(); 中的 initializeBean() 
-1234567891011121314151617181920protected Object initializeBean(final String beanName, final Object bean, RootBeanDefinition mbd) &#123;   ...   Object wrappedBean = bean;   if (mbd == null || !mbd.isSynthetic()) &#123;      // 1. ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2021/05/03/SpringIOC%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="SpringIOC源码学习笔记">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringIOC源码学习笔记"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/05/03/SpringIOC%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="SpringIOC源码学习笔记">SpringIOC源码学习笔记</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2021-05-03 10:11:20"><i class="far fa-calendar-alt"></i>2021-05-03</time></div><div class="content">趁着五一假期深入学习一下SpringIOC构建的源码，获益匪浅~
-ApplicationContextIOC容器是基于 应用上下文类 的子类，因为这个类继承了 ListableBeanFactory  可列表BeanFactory和 HierarchicalBeanFactory 分层BeanFactory ，这两个类继承于 BeanFactory ，然后通过组合的方式把 AutowireCapableBeanFactory 组合进去了，用来支撑DI功能。
-12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364@Override	public void refresh() throws BeansException, IllegalStateException &#123;		synchronized (this.startupShutdownMonitor) &#123;			// 刷新上下文准备：记录 ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2021/03/13/Spring%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8/" title="Spring拦截器和过滤器">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Spring拦截器和过滤器"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/03/13/Spring%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8/" title="Spring拦截器和过滤器">Spring拦截器和过滤器</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2021-03-13 20:11:45"><i class="far fa-calendar-alt"></i>2021-03-13</time></div><div class="content">贴一下以前做的spring笔记，提供给大家学习~
-Spring Interceptor&amp;FilterInterceptor（拦截器）需要Springmvc支持，通过实现 HandlerInterceptor 接口，并在 WebMvcConfigurerAdapter 中 addInterceptors 注册拦截器绑定拦截路径实现对 Controller 的围绕通知或者拦截，比如判断用户登录情况、权限验证。
-其中 preHandle() 方法在调用Handler之前进行拦截(下图步骤3)， postHandle()方法在视图渲染之前调用(下图步骤5)， afterCompletion() 方法在返回相应之前执行
+    
+<link rel="stylesheet" href="/css/common.min.css">
 
 
-多个拦截器的执行顺序
-多个拦截器它的执行顺序是和栈的入栈出栈顺序有点类似，我们把preHandle方法比作入栈，postHandle方法比作出栈，所以就是preHandle先执行的postHandle反而后执行。
+
+    
+    
+    
+<link rel="stylesheet" href="/css/iconfont.min.css">
+
+    
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+    <body>
+        <header class="header header-fixture">
+    <div class="profile-search-wrap flex sm:block">
+        
+        
+        <div class="profile sm:text-center md:px-1 lg:px-3 sm:pb-4 sm:pt-6">
+            <a id="avatar" role="link" href="https://github.com/fengkx" class="inline-block lg:w-16 lg:h-16 w-8 h-8 m-2" target="_blank" rel="noopener" rel="noreferrer" >
+                <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
+            </a>
+            <h2 id="name" class="hidden lg:block">GuoChing</h2>
+            <h3 id="title" class="hidden lg:block">在广州的一位萌新的Web开发</h3>
+            
+            <small id="location" class="hidden lg:block">
+                <i class="iconfont icon-map-icon"></i>
+                广州
+            </small>
+            
+        </div>
+        
+        
+<div class="search flex-1 flex lg:inline-block sm:hidden lg:px-4 lg:mt-2 lg:mb-4 lg:w-full">
+    <form id="search-form" class="my-auto flex-1 lg:border lg:border-solid lg:border-gray-200">
+        <div class="input-group table bg-gray-100 lg:bg-white w-full">
+            <input id="search-input" type="text" placeholder="搜索" class="inline-block w-full bg-gray-100 lg:bg-white p-1">
+            <span class="table-cell">
+                <button name="search tigger button" disabled>
+                    <i class="iconfont icon-search m-2"></i>
+                </button>
+            </span>
+        </div>
+    </form>
+        
+<div id="content-json" data-placeholder="搜索" class="invisible hidden">/content.json</div>
+<script id="search-teamplate" type="text/html" data-path="/content.json">
+    <div>
+        <div class="search-header bg-gray-400">
+            <input id="actual-search-input" model="keyword" ref="input" class="inline-block w-full h-10 px-2 py-1" placeholder="搜索" type="text">
+        </div>
+        <div class="search-result bg-gray-200">
+            {{#each searchPosts}}
+            <a href="/{{ path }}" class="result-item block px-2 pb-3 mb-1 pt-1 hover:bg-indigo-100">
+                <i class="iconfont icon-file"></i>
+                <h1 class="result-title inline font-medium text-lg">{{ title }}</h1>
+                <p class="result-content text-gray-600 text-sm">{{{ text }}}</p>
+            </a>
+            {{/each}}
+        </div>
+    </div>
+</script>
+
+</div>
 
 
-Filter（过滤器）通常用于过滤字符编码、做一些业务逻辑判断，主要用于对用户请求进行预处理，同时也可进行逻辑判断。Filter不依赖与Springmv ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2021/02/21/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E7%AC%94%E8%AE%B0/" title="Git常用命令笔记">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Git常用命令笔记"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/02/21/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E7%AC%94%E8%AE%B0/" title="Git常用命令笔记">Git常用命令笔记</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2021-02-21 16:48:16"><i class="far fa-calendar-alt"></i>2021-02-21</time></div><div class="content">Git常用命令汇总添加个人信息1234projectPath/.git/config 添加[user]        email=chingguo20@163.com        name=ching
+        <button name="menu toogle button" id="menu-toggle-btn" class="block sm:hidden p-3" role="button" aria-expanded="false">
+            <i class="iconfont icon-hamburger"></i>
+        </button>
+    </div>
+    <nav id="menu-nav" class="hidden sm:flex flex-col">
+        
+        
+            <div class="menu-item menu-home" role="menuitem">
+                <a href="/.">
+                    <i class="iconfont icon-home" aria-hidden="true"></i>
+                    <span class="menu-title">首页</span>
+                </a>
+            </div>
+        
+        
+            <div class="menu-item menu-about" role="menuitem">
+                <a href="/about">
+                    <i class="iconfont icon-cup" aria-hidden="true"></i>
+                    <span class="menu-title">关于</span>
+                </a>
+            </div>
+        
+        
+<div class="social-links flex sm:flex-col lg:hidden mt-5">
+    
+        <span class="social-item text-center">
+            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
+                <i class="iconfont social-icon icon-github"></i>
+                <span class="menu-title hidden lg:inline">menu.github</span>
+            </a>
+        </span>
+    
+        <span class="social-item text-center">
+            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
+                <i class="iconfont social-icon icon-telegram"></i>
+                <span class="menu-title hidden lg:inline">menu.telegram</span>
+            </a>
+        </span>
+    
+        <span class="social-item text-center">
+            <a href="https://twitter.com/example" target="_blank" rel="noopener">
+                <i class="iconfont social-icon icon-twitter"></i>
+                <span class="menu-title hidden lg:inline">menu.twitter</span>
+            </a>
+        </span>
+    
+        <span class="social-item text-center">
+            <a href="/atom.xml">
+                <i class="iconfont social-icon icon-rss"></i>
+                <span class="menu-title hidden lg:inline">menu.rss</span>
+            </a>
+        </span>
+    
+</div>
 
-ssh秘钥生成1ssh-keygen -o
 
-分支查看分支1git branch -a &#x2F;&#x2F;查看所有分支（远程和本地）
+    </nav>
+</header>
 
-分支修改暂存&amp;恢复123git stash&#x2F;&#x2F;将当前分支修改的暂存git checkout dev&#x2F;&#x2F;切换到目标分支git stash pop&#x2F;&#x2F;恢复暂存到目标分支
+        <section class="main-section">
+            <main class="flex-1 px-4 py-14 md:px-5 lg:px-8 lg:py-4 relative min-h-screen">
+    <div class="content article-list">
+    
+        <article class="article border-b border-solid border-gray-200">
+    <div class="article-header mb-4 mt-5">
+        
+    
+        <h1 itemprop="name">
+            <a class="article-title text-lg" href="/2021/06/15/JVM%E5%9F%BA%E6%9C%AC%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/">JVM基本调优参数</a>
+        </h1>
+    
 
-分支的追踪12git branch --set-upstream-to&#x3D;origin&#x2F;&#39;远程分支&#39; &#39;本地分支&#39;  &#x2F;&#x2F;设置一个分支的追踪远程分支git checkout -b &#39;本地分支&#39; &#39;远程分支&#39; &#x2F;&#x2F;创建一个分支并绑定远程分支
 
-设置追踪仓库1git remote add orig ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2021/02/13/Springboot%E8%87%AA%E5%AE%9A%E4%B9%89Starter/" title="Springboot自定义Starter">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Springboot自定义Starter"></a></div><div class="recent-post-info"><a class="article-title" href="/2021/02/13/Springboot%E8%87%AA%E5%AE%9A%E4%B9%89Starter/" title="Springboot自定义Starter">Springboot自定义Starter</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2021-02-13 15:10:55"><i class="far fa-calendar-alt"></i>2021-02-13</time></div><div class="content">明天虽然没有女朋友要陪，但是工作还是要做好的~，项目需要自定义Starter对新功能进行支持，虽然之前也做过，但是没有系统性分析其原理，所以这两天对Spring自定义Starter进行深入学习，做了以下笔记，提供给大家学习。
-Springboot自定义Starters关键点
-编写pom文件，引入相关依赖
 
-编写XXXAutoConfiguration类实现自动配置
- 1234567891011121314151617//指定配置类@Configuration//在指定条件下成立的时候自动配置生效@ConditionalOnXXX//指定自动配置类的顺序@AutoConfigureAfter//给容器中添加组件@Bean//绑定配置文件中到属性配置类@ConfigurationProperties//加载属性配置类到容器，相当于用@Bean加载属性配置类，这个注解简化了流程@EnableConfigurationProperties
+    </div>
+    
+    <p class="article-meta mb-3 text-xs">
+        <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2021/06/15/JVM%E5%9F%BA%E6%9C%AC%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/" class="article-date">
+	  <time datetime="2021-06-15T12:26:58.000Z" itemprop="datePublished">6月 15</time>
+	</a>
+</span>
 
-编写 META-INF/spring.factories 文件
- 12org.springframework.boot.autoconfigure.Ena ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/09/16/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" title="HashMap源码学习笔记">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="HashMap源码学习笔记"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/09/16/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" title="HashMap源码学习笔记">HashMap源码学习笔记</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-09-16 22:34:53"><i class="far fa-calendar-alt"></i>2020-09-16</time></div><div class="content">HashMap源码学习笔记HashMap核心属性解析DEFAULT_INITIAL_CAPACITY（默认初始容量）默认初始容量是在构造HashMap时，不定义初始容量默认指定的大小，默认大小为1&lt;&lt;4也就是16；
-MAXIMUM_CAPACITY（最大容量）最大容量是单个HashMap实例所能装载的最大容量，值为1&lt;&lt;30，也就是536,870,912个元素；
-DEFAULT_LOAD_FACTOR（默认装载因子）默认装载因子，在构造HashMap时，不指定装载因子时，默认为0.75f。装载因子的作用是留一部分的容量作为冗余，避免hash之后过多元素分配到一个桶里，导致hashmap退化成链表。
-MIN_TREEIFY_CAPACITY（最小树化容量阈值）最小树化阈值是jdk1.8中加入的，控制HashMap在什么情况下会将桶中的链表转为红黑树，默认为64
-TREEIFY_THRESHOLD（树化阈值）树化阈值是在jdk1.8中被加入的，默认为8，应用在我们常听说的红黑树中，在HashMap实例的元素数量大于最小化树化阈值且大于树化阈值时，就会将链表转为红黑树 ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/08/31/%E9%87%8D%E6%B8%A9TCP%E2%80%94%E2%80%94%E4%BB%8E%E7%8A%B6%E6%80%81%E6%9C%BA%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%BC%80%E5%A7%8B/" title="重温TCP——从状态机状态转移开始">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="重温TCP——从状态机状态转移开始"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/08/31/%E9%87%8D%E6%B8%A9TCP%E2%80%94%E2%80%94%E4%BB%8E%E7%8A%B6%E6%80%81%E6%9C%BA%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%BC%80%E5%A7%8B/" title="重温TCP——从状态机状态转移开始">重温TCP——从状态机状态转移开始</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-08-31 23:35:55"><i class="far fa-calendar-alt"></i>2020-08-31</time></div><div class="content"></div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/08/24/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E6%A6%82%E5%BF%B5/" title="设计模式的概念">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="设计模式的概念"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/08/24/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E6%A6%82%E5%BF%B5/" title="设计模式的概念">设计模式的概念</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-08-24 13:41:36"><i class="far fa-calendar-alt"></i>2020-08-24</time></div><div class="content">设计模式概念0. 设计模式产生的背景“设计模式”最开始是在建筑设计领域被提出的，其对城镇、邻里、住宅、花园和房间等进行设计的基本模式，提供了一些建筑设计中常见问题的解决方法。而在之后，软件开发中的“设计模式”才被提出，并在1995年，多名作者合作出版的《设计模式：可复用面向对象软件的基础》（Design Patterns: Elements of Reusable Object-Oriented Software）一书中提出了23中设计模式，首次将软件设计模式进行具体定义和分类。
-1. 什么是设计模式软件设计模式（Software Design Pattern），简称设计模式，是一套被反复使用，分类的代码编程经验的总结。它将软件设计过程中一些重复的问题的解决方法抽象出来，归纳为一系列的解决方法。可以提高代码的可重用性，可读性和可靠性。设计模式的本质是面向对象设计原则的实际运用，是对类的封装性、继承性和多态性以及类的关联关系和组合关系的充分理解。
-2. 学习设计模式的意义
-可以提高程序员的思维能力、编程能力和设计能力。
-使程序设计更加标准化、代码编制更加工程化，使软件开发效率大大提高，从 ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/img/avatar.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">ChingKwok</div><div class="author-info__description">热爱生活 · 坚持运动 · 效率学习</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives"><div class="headline">文章</div><div class="length_num">34</div></a></div><div class="card-info-data-item is-center">      <a href="/tags"><div class="headline">标签</div><div class="length_num">19</div></a></div></div><div class="card-info-bookmark is-center"><button class="button--animated" id="bookmark-it" title="加入书签"><i class="fas fa-bookmark"></i><span>加入书签</span></button></div><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:1040802287@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">Redis & Jvm 学习笔记持续更新中，欢迎收藏订阅</div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-recent-item"><div class="aside-recent-post"><a href="/2022/06/05/%E6%9C%AC%E5%9C%B0%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/06/05/%E6%9C%AC%E5%9C%B0%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/" title="本地事务实现笔记">本地事务实现笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-06-05 17:21:40">2022-06-05</time></div></a></div><div class="aside-recent-post"><a href="/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/" title="MySQL底层：InnoDB记录结构笔记">MySQL底层：InnoDB记录结构笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-29 17:18:19">2022-05-29</time></div></a></div><div class="aside-recent-post"><a href="/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/" title="JVM垃圾回收器G1对比CMS笔记">JVM垃圾回收器G1对比CMS笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-25 16:46:31">2022-05-25</time></div></a></div><div class="aside-recent-post"><a href="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Redis数据结构源码学习笔记">Redis数据结构源码学习笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-01 20:10:34">2022-05-01</time></div></a></div><div class="aside-recent-post"><a href="/2022/04/22/Redis-IO%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/04/22/Redis-IO%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" title="Redis IO线程模型">Redis IO线程模型</div><time class="aside-post_meta post-meta__date" title="发表于 2022-04-22 17:55:10">2022-04-22</time></div></a></div></div></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/TCP/" style="font-size: 16px; color: #999">TCP</a> <a href="/tags/centos/" style="font-size: 17.2px; color: #999ca1">centos</a> <a href="/tags/docker/" style="font-size: 16px; color: #999">docker</a> <a href="/tags/freeMarker/" style="font-size: 17.2px; color: #999ca1">freeMarker</a> <a href="/tags/git/" style="font-size: 16px; color: #999">git</a> <a href="/tags/hotspot/" style="font-size: 16px; color: #999">hotspot</a> <a href="/tags/java/" style="font-size: 22px; color: #99a9bf">java</a> <a href="/tags/jvm/" style="font-size: 22px; color: #99a9bf">jvm</a> <a href="/tags/mybatis/" style="font-size: 17.2px; color: #999ca1">mybatis</a> <a href="/tags/mysql/" style="font-size: 17.2px; color: #999ca1">mysql</a> <a href="/tags/rabbitmq/" style="font-size: 16px; color: #999">rabbitmq</a> <a href="/tags/redis/" style="font-size: 20.8px; color: #99a6b7">redis</a> <a href="/tags/spring/" style="font-size: 19.6px; color: #99a3b0">spring</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 17.2px; color: #999ca1">多线程</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 16px; color: #999">消息队列</a> <a href="/tags/%E6%BA%90%E7%A0%81/" style="font-size: 18.4px; color: #999fa8">源码</a> <a href="/tags/%E7%BA%BF%E7%A8%8B/" style="font-size: 16px; color: #999">线程</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 16px; color: #999">设计模式</a> <a href="/tags/%E9%94%81/" style="font-size: 16px; color: #999">锁</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/06/"><span class="card-archive-list-date">六月 2022</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/05/"><span class="card-archive-list-date">五月 2022</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/04/"><span class="card-archive-list-date">四月 2022</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/07/"><span class="card-archive-list-date">七月 2021</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/06/"><span class="card-archive-list-date">六月 2021</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/05/"><span class="card-archive-list-date">五月 2021</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/03/"><span class="card-archive-list-date">三月 2021</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/02/"><span class="card-archive-list-date">二月 2021</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item more is-center"><a class="card-archive-list-link-more" href="/archives">
-              <span>查看更多</span><i class="fas fa-angle-right"  ></i></a></li></ul></div></div><div class="card-widget card-webinfo"><div class="card-content"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="webinfo-article-name">文章数目 :</div><div class="webinfo-article-count">34</div></div></div></div></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By ChingKwok</div><div class="framework-info"><span>驱动 </span><a href="https://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly" target="_blank" rel="noopener"><span>Butterfly</span></a></div><div class="icp"><a><img class="icp-icon" src="/img/icp.png"/><span>粤ICP备20052429号</span></a></div></div></footer></div><section class="rightside" id="rightside"><div id="rightside-config-hide"><button class="translate_chn_to_cht" id="translateLink" title="简繁转换">繁</button><button id="darkmode" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/typed.js"></script><script>var subtitleEffect = true
-if (subtitleEffect) { 
-  var typed = new Typed("#subtitle", {
-    strings: "路漫漫其修远兮，吾将上下而求索,今日因，明日果,不进则退".split(","),
-    startDelay: 300,
-    typeSpeed: 150,
-    loop: true,
-    backSpeed: 50
-  })
-} else {
-  document.getElementById("subtitle").innerHTML = '路漫漫其修远兮，吾将上下而求索'
-}</script></body></html>
+        
+
+        
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link" href="/tags/jvm/" rel="tag">jvm</a>
+  </span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/06/15/JVM%E5%9F%BA%E6%9C%AC%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/#comments" class="article-comment-link">评论</a></span>
+        
+
+    </p>
+
+</article>
+
+    
+        <article class="article border-b border-solid border-gray-200">
+    <div class="article-header mb-4 mt-5">
+        
+    
+        <h1 itemprop="name">
+            <a class="article-title text-lg" href="/2021/05/21/Springboot%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E7%AC%94%E8%AE%B0/">Springboot启动过程笔记</a>
+        </h1>
+    
+
+
+
+    </div>
+    
+    <p class="article-meta mb-3 text-xs">
+        <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2021/05/21/Springboot%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E7%AC%94%E8%AE%B0/" class="article-date">
+	  <time datetime="2021-05-21T13:04:51.000Z" itemprop="datePublished">5月 21</time>
+	</a>
+</span>
+
+        
+
+        
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/spring/" rel="tag">spring</a>
+  </span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/05/21/Springboot%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E7%AC%94%E8%AE%B0/#comments" class="article-comment-link">评论</a></span>
+        
+
+    </p>
+
+</article>
+
+    
+        <article class="article border-b border-solid border-gray-200">
+    <div class="article-header mb-4 mt-5">
+        
+    
+        <h1 itemprop="name">
+            <a class="article-title text-lg" href="/2021/05/05/SpringAOP%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">SpringAOP源码学习笔记</a>
+        </h1>
+    
+
+
+
+    </div>
+    
+    <p class="article-meta mb-3 text-xs">
+        <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2021/05/05/SpringAOP%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="article-date">
+	  <time datetime="2021-05-05T01:54:04.000Z" itemprop="datePublished">5月 5</time>
+	</a>
+</span>
+
+        
+
+        
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/spring/" rel="tag">spring</a>, <a class="article-tag-link" href="/tags/%E6%BA%90%E7%A0%81/" rel="tag">源码</a>
+  </span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/05/05/SpringAOP%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#comments" class="article-comment-link">评论</a></span>
+        
+
+    </p>
+
+</article>
+
+    
+        <article class="article border-b border-solid border-gray-200">
+    <div class="article-header mb-4 mt-5">
+        
+    
+        <h1 itemprop="name">
+            <a class="article-title text-lg" href="/2021/05/03/SpringIOC%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">SpringIOC源码学习笔记</a>
+        </h1>
+    
+
+
+
+    </div>
+    
+    <p class="article-meta mb-3 text-xs">
+        <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2021/05/03/SpringIOC%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="article-date">
+	  <time datetime="2021-05-03T02:11:20.000Z" itemprop="datePublished">5月 3</time>
+	</a>
+</span>
+
+        
+
+        
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/spring/" rel="tag">spring</a>, <a class="article-tag-link" href="/tags/%E6%BA%90%E7%A0%81/" rel="tag">源码</a>
+  </span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/05/03/SpringIOC%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#comments" class="article-comment-link">评论</a></span>
+        
+
+    </p>
+
+</article>
+
+    
+        <article class="article border-b border-solid border-gray-200">
+    <div class="article-header mb-4 mt-5">
+        
+    
+        <h1 itemprop="name">
+            <a class="article-title text-lg" href="/2021/03/13/Spring%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8/">Spring拦截器和过滤器</a>
+        </h1>
+    
+
+
+
+    </div>
+    
+    <p class="article-meta mb-3 text-xs">
+        <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2021/03/13/Spring%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8/" class="article-date">
+	  <time datetime="2021-03-13T12:11:45.000Z" itemprop="datePublished">3月 13</time>
+	</a>
+</span>
+
+        
+
+        
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/spring/" rel="tag">spring</a>
+  </span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/03/13/Spring%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8/#comments" class="article-comment-link">评论</a></span>
+        
+
+    </p>
+
+</article>
+
+    
+        <article class="article border-b border-solid border-gray-200">
+    <div class="article-header mb-4 mt-5">
+        
+    
+        <h1 itemprop="name">
+            <a class="article-title text-lg" href="/2021/02/21/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E7%AC%94%E8%AE%B0/">Git常用命令笔记</a>
+        </h1>
+    
+
+
+
+    </div>
+    
+    <p class="article-meta mb-3 text-xs">
+        <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2021/02/21/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E7%AC%94%E8%AE%B0/" class="article-date">
+	  <time datetime="2021-02-21T08:48:16.000Z" itemprop="datePublished">2月 21</time>
+	</a>
+</span>
+
+        
+
+        
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/git/" rel="tag">git</a>
+  </span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/02/21/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E7%AC%94%E8%AE%B0/#comments" class="article-comment-link">评论</a></span>
+        
+
+    </p>
+
+</article>
+
+    
+        <article class="article border-b border-solid border-gray-200">
+    <div class="article-header mb-4 mt-5">
+        
+    
+        <h1 itemprop="name">
+            <a class="article-title text-lg" href="/2021/02/13/Springboot%E8%87%AA%E5%AE%9A%E4%B9%89Starter/">Springboot自定义Starter</a>
+        </h1>
+    
+
+
+
+    </div>
+    
+    <p class="article-meta mb-3 text-xs">
+        <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2021/02/13/Springboot%E8%87%AA%E5%AE%9A%E4%B9%89Starter/" class="article-date">
+	  <time datetime="2021-02-13T07:10:55.000Z" itemprop="datePublished">2月 13</time>
+	</a>
+</span>
+
+        
+
+        
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/spring/" rel="tag">spring</a>
+  </span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/02/13/Springboot%E8%87%AA%E5%AE%9A%E4%B9%89Starter/#comments" class="article-comment-link">评论</a></span>
+        
+
+    </p>
+
+</article>
+
+    
+        <article class="article border-b border-solid border-gray-200">
+    <div class="article-header mb-4 mt-5">
+        
+    
+        <h1 itemprop="name">
+            <a class="article-title text-lg" href="/2020/09/16/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">HashMap源码学习笔记</a>
+        </h1>
+    
+
+
+
+    </div>
+    
+    <p class="article-meta mb-3 text-xs">
+        <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2020/09/16/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="article-date">
+	  <time datetime="2020-09-16T14:34:53.000Z" itemprop="datePublished">9月 16</time>
+	</a>
+</span>
+
+        
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/09/16/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/#comments" class="article-comment-link">评论</a></span>
+        
+
+    </p>
+
+</article>
+
+    
+        <article class="article border-b border-solid border-gray-200">
+    <div class="article-header mb-4 mt-5">
+        
+    
+        <h1 itemprop="name">
+            <a class="article-title text-lg" href="/2020/08/31/%E9%87%8D%E6%B8%A9TCP%E2%80%94%E2%80%94%E4%BB%8E%E7%8A%B6%E6%80%81%E6%9C%BA%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%BC%80%E5%A7%8B/">重温TCP——从状态机状态转移开始</a>
+        </h1>
+    
+
+
+
+    </div>
+    
+    <p class="article-meta mb-3 text-xs">
+        <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2020/08/31/%E9%87%8D%E6%B8%A9TCP%E2%80%94%E2%80%94%E4%BB%8E%E7%8A%B6%E6%80%81%E6%9C%BA%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%BC%80%E5%A7%8B/" class="article-date">
+	  <time datetime="2020-08-31T15:35:55.000Z" itemprop="datePublished">8月 31</time>
+	</a>
+</span>
+
+        
+
+        
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/TCP/" rel="tag">TCP</a>
+  </span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/08/31/%E9%87%8D%E6%B8%A9TCP%E2%80%94%E2%80%94%E4%BB%8E%E7%8A%B6%E6%80%81%E6%9C%BA%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E5%BC%80%E5%A7%8B/#comments" class="article-comment-link">评论</a></span>
+        
+
+    </p>
+
+</article>
+
+    
+        <article class="article border-b border-solid border-gray-200">
+    <div class="article-header mb-4 mt-5">
+        
+    
+        <h1 itemprop="name">
+            <a class="article-title text-lg" href="/2020/08/24/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E6%A6%82%E5%BF%B5/">设计模式的概念</a>
+        </h1>
+    
+
+
+
+    </div>
+    
+    <p class="article-meta mb-3 text-xs">
+        <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2020/08/24/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E6%A6%82%E5%BF%B5/" class="article-date">
+	  <time datetime="2020-08-24T05:41:36.000Z" itemprop="datePublished">8月 24</time>
+	</a>
+</span>
+
+        
+
+        
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a>
+  </span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/08/24/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E6%A6%82%E5%BF%B5/#comments" class="article-comment-link">评论</a></span>
+        
+
+    </p>
+
+</article>
+
+    
+</div>
+
+    
+<nav class="pagination bottom-0 px-5 mb-3 absolute w-full inset-x-0" data-stick-bottom>
+    <div class="flex justify-between leading-tight">
+        <span class="pager">
+            
+                <button class="prev">
+                    <a href="/">
+                        <i class="iconfont icon-angle-left"></i>
+                        上一页
+                    </a>
+                </button>
+            
+            
+                <button class="next">
+                    <a href="/page/3/">
+                        下一页
+                        <i class="iconfont icon-angle-right"></i>
+                    </a>
+                </button>
+            
+        </span>
+        <div class="total-article bar-right">Page 2 of 4</div>
+    </div>
+</nav>
+
+
+</main>
+<aside style="" id="sidebar" class="aside aside-fixture">
+    <div class="widgets">
+        
+            
+
+            <hr>
+        
+            
+    <div class="widget">
+        <h3 class="widget-title">
+            标签
+        </h3>
+        <div class="widget-body">
+            <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/TCP/" rel="tag">TCP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/centos/" rel="tag">centos</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/freeMarker/" rel="tag">freeMarker</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/" rel="tag">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hotspot/" rel="tag">hotspot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mybatis/" rel="tag">mybatis</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/" rel="tag">rabbitmq</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/" rel="tag">spring</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81/" rel="tag">源码</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BA%BF%E7%A8%8B/" rel="tag">线程</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%94%81/" rel="tag">锁</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+
+            <hr>
+        
+            
+    <div class="widget">
+        
+        <h3 class="widget-title">标签云</h3>
+        
+        <div class="widget-body tagcloud">
+            <a href="/tags/TCP/" style="font-size: 13px;">TCP</a> <a href="/tags/centos/" style="font-size: 13.2px;">centos</a> <a href="/tags/docker/" style="font-size: 13px;">docker</a> <a href="/tags/freeMarker/" style="font-size: 13.2px;">freeMarker</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/hotspot/" style="font-size: 13px;">hotspot</a> <a href="/tags/java/" style="font-size: 14px;">java</a> <a href="/tags/jvm/" style="font-size: 14px;">jvm</a> <a href="/tags/mybatis/" style="font-size: 13.2px;">mybatis</a> <a href="/tags/mysql/" style="font-size: 13.2px;">mysql</a> <a href="/tags/rabbitmq/" style="font-size: 13px;">rabbitmq</a> <a href="/tags/redis/" style="font-size: 13.8px;">redis</a> <a href="/tags/spring/" style="font-size: 13.6px;">spring</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 13.2px;">多线程</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 13px;">消息队列</a> <a href="/tags/%E6%BA%90%E7%A0%81/" style="font-size: 13.4px;">源码</a> <a href="/tags/%E7%BA%BF%E7%A8%8B/" style="font-size: 13px;">线程</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">设计模式</a> <a href="/tags/%E9%94%81/" style="font-size: 13px;">锁</a>
+        </div>
+    </div>
+
+
+            <hr>
+        
+            
+    <div class="widget">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget-body">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/06/">六月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">七月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/09/">九月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+
+            <hr>
+        
+            
+<div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+        <ul class="recent-post-list list-unstyled">
+            
+                <li>
+                    <div class="recent-post">
+                        <p class="item-category">
+                            
+                        </p>
+                        <p class="item-title">
+                            <a href="/2022/06/05/%E6%9C%AC%E5%9C%B0%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/" class="title">本地事务实现笔记</a>
+                        </p>
+                        <p class="item-date">
+                            <time datetime="2022-06-05T09:21:40.000Z" itemprop="datePublished">2022-06-05</time>
+                        </p>
+                    </div>
+                </li>
+            
+                <li>
+                    <div class="recent-post">
+                        <p class="item-category">
+                            
+                        </p>
+                        <p class="item-title">
+                            <a href="/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/" class="title">MySQL底层：InnoDB记录结构笔记</a>
+                        </p>
+                        <p class="item-date">
+                            <time datetime="2022-05-29T09:18:19.000Z" itemprop="datePublished">2022-05-29</time>
+                        </p>
+                    </div>
+                </li>
+            
+                <li>
+                    <div class="recent-post">
+                        <p class="item-category">
+                            
+                        </p>
+                        <p class="item-title">
+                            <a href="/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/" class="title">JVM垃圾回收器G1对比CMS笔记</a>
+                        </p>
+                        <p class="item-date">
+                            <time datetime="2022-05-25T08:46:31.000Z" itemprop="datePublished">2022-05-25</time>
+                        </p>
+                    </div>
+                </li>
+            
+                <li>
+                    <div class="recent-post">
+                        <p class="item-category">
+                            
+                        </p>
+                        <p class="item-title">
+                            <a href="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="title">Redis数据结构源码学习笔记</a>
+                        </p>
+                        <p class="item-date">
+                            <time datetime="2022-05-01T12:10:34.000Z" itemprop="datePublished">2022-05-01</time>
+                        </p>
+                    </div>
+                </li>
+            
+                <li>
+                    <div class="recent-post">
+                        <p class="item-category">
+                            
+                        </p>
+                        <p class="item-title">
+                            <a href="/2022/04/22/Redis-IO%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" class="title">Redis IO线程模型</a>
+                        </p>
+                        <p class="item-date">
+                            <time datetime="2022-04-22T09:55:10.000Z" itemprop="datePublished">2022-04-22</time>
+                        </p>
+                    </div>
+                </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+            <hr>
+        
+    </div>
+</aside>
+
+
+        </section>
+        <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
+    
+    <div class="footer-social-links">
+        
+            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
+                <i class="iconfont icon-github"></i>
+            </a>
+        
+            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
+                <i class="iconfont icon-telegram"></i>
+            </a>
+        
+            <a href="https://twitter.com/example" target="_blank" rel="noopener">
+                <i class="iconfont icon-twitter"></i>
+            </a>
+        
+            <a href="/atom.xml">
+                <i class="iconfont icon-rss"></i>
+            </a>
+        
+    </div>
+    
+    
+</footer>
+
+        <div id="mask" class="hidden mask fixed inset-0 bg-gray-900 opacity-75 z-40"></div>
+        <div id="search-view-container" class="hidden shadow-xl"></div>
+        
+<script src="/js/dom-event.min.js"></script>
+
+
+
+<script src="/js/local-search.min.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/lightgallery.js@1.1.3/dist/js/lightgallery.min.js"></script>
+    
+<script src="/js/light-gallery.min.js"></script>
+
+
+
+
+
+
+    </body>
+</html>
