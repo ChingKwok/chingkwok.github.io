@@ -7,7 +7,7 @@
     <meta name="description" content="指定堆大小12345&#x2F;&#x2F;指定堆最大-XX:Xmx1024m&#x2F;&#x2F;指定堆初始大小-XX:Xms1024m  Java方法栈指定线程的栈最大空间 12&#x2F;&#x2F;默认256K-XX:Xss128K  影响GC因素： 局部变量表槽位复用 在方法体中声明的变量都会在局部变量表中，如果超过其作用域，则会被之后声明的变量复用，如果是引用类型，则会失去引用，被GC。但如果只是超过作用域但是没有被其他变量复用，则不会失去引">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM基本调优参数">
-<meta property="og:url" content="http://yoursite.com/2021/06/15/JVM%E5%9F%BA%E6%9C%AC%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/index.html">
+<meta property="og:url" content="https://chingkwok.github.io/2021/06/15/JVM%E5%9F%BA%E6%9C%AC%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/index.html">
 <meta property="og:site_name" content="ChingKwok的书斋">
 <meta property="og:description" content="指定堆大小12345&#x2F;&#x2F;指定堆最大-XX:Xmx1024m&#x2F;&#x2F;指定堆初始大小-XX:Xms1024m  Java方法栈指定线程的栈最大空间 12&#x2F;&#x2F;默认256K-XX:Xss128K  影响GC因素： 局部变量表槽位复用 在方法体中声明的变量都会在局部变量表中，如果超过其作用域，则会被之后声明的变量复用，如果是引用类型，则会失去引用，被GC。但如果只是超过作用域但是没有被其他变量复用，则不会失去引">
 <meta property="og:locale" content="zh_CN">
@@ -49,7 +49,7 @@
                 <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
             </a>
             <h2 id="name" class="hidden lg:block">GuoChing</h2>
-            <h3 id="title" class="hidden lg:block">在广州的一位萌新的Web开发</h3>
+            <h3 id="title" class="hidden lg:block">在广州的一位3年萌新Web开发</h3>
             
             <small id="location" class="hidden lg:block">
                 <i class="iconfont icon-map-icon"></i>
@@ -115,38 +115,6 @@
             </div>
         
         
-<div class="social-links flex sm:flex-col lg:hidden mt-5">
-    
-        <span class="social-item text-center">
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-github"></i>
-                <span class="menu-title hidden lg:inline">menu.github</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-telegram"></i>
-                <span class="menu-title hidden lg:inline">menu.telegram</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-twitter"></i>
-                <span class="menu-title hidden lg:inline">menu.twitter</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="/atom.xml">
-                <i class="iconfont social-icon icon-rss"></i>
-                <span class="menu-title hidden lg:inline">menu.rss</span>
-            </a>
-        </span>
-    
-</div>
-
 
     </nav>
 </header>
@@ -286,7 +254,7 @@
         </div>
         
 <blockquote class="copyright">
-    <p><strong>本文链接 : </strong><a class="permalink" href="http://yoursite.com/2021/06/15/JVM%E5%9F%BA%E6%9C%AC%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/">http://yoursite.com/2021/06/15/JVM基本调优参数/</a></p>
+    <p><strong>本文链接 : </strong><a class="permalink" href="https://chingkwok.github.io/2021/06/15/JVM%E5%9F%BA%E6%9C%AC%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/">https://chingkwok.github.io/2021/06/15/JVM基本调优参数/</a></p>
     <p><strong>This article is available under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a> License</strong></p>
 </blockquote>
 
@@ -318,26 +286,6 @@
 
         </section>
         <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
-    
-    <div class="footer-social-links">
-        
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-github"></i>
-            </a>
-        
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-telegram"></i>
-            </a>
-        
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont icon-twitter"></i>
-            </a>
-        
-            <a href="/atom.xml">
-                <i class="iconfont icon-rss"></i>
-            </a>
-        
-    </div>
     
     
 </footer>

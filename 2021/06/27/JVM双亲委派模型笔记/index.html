@@ -7,7 +7,7 @@
     <meta name="description" content="上次学习了JVM的类加载过程，之前学习过的双亲委派模型变得生疏了，这篇笔记用于重新学习和以后复习~ JVM双亲委派模型什么是双亲委派模型？在加载一个类之前，先使用父加载器加载，若返回null才进行加载。 引入双亲委派模型是为了解决一些核心类，只能由某个加载器进行加载，避免有全限名一样但类加载器不一样的情况。 类的唯一标识是什么？加载类的类加载器+类全限名 双亲委派模型的破坏 jdk1.2，双亲委派">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM双亲委派模型笔记">
-<meta property="og:url" content="http://yoursite.com/2021/06/27/JVM%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:url" content="https://chingkwok.github.io/2021/06/27/JVM%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="ChingKwok的书斋">
 <meta property="og:description" content="上次学习了JVM的类加载过程，之前学习过的双亲委派模型变得生疏了，这篇笔记用于重新学习和以后复习~ JVM双亲委派模型什么是双亲委派模型？在加载一个类之前，先使用父加载器加载，若返回null才进行加载。 引入双亲委派模型是为了解决一些核心类，只能由某个加载器进行加载，避免有全限名一样但类加载器不一样的情况。 类的唯一标识是什么？加载类的类加载器+类全限名 双亲委派模型的破坏 jdk1.2，双亲委派">
 <meta property="og:locale" content="zh_CN">
@@ -48,7 +48,7 @@
                 <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
             </a>
             <h2 id="name" class="hidden lg:block">GuoChing</h2>
-            <h3 id="title" class="hidden lg:block">在广州的一位萌新的Web开发</h3>
+            <h3 id="title" class="hidden lg:block">在广州的一位3年萌新Web开发</h3>
             
             <small id="location" class="hidden lg:block">
                 <i class="iconfont icon-map-icon"></i>
@@ -114,38 +114,6 @@
             </div>
         
         
-<div class="social-links flex sm:flex-col lg:hidden mt-5">
-    
-        <span class="social-item text-center">
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-github"></i>
-                <span class="menu-title hidden lg:inline">menu.github</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-telegram"></i>
-                <span class="menu-title hidden lg:inline">menu.telegram</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-twitter"></i>
-                <span class="menu-title hidden lg:inline">menu.twitter</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="/atom.xml">
-                <i class="iconfont social-icon icon-rss"></i>
-                <span class="menu-title hidden lg:inline">menu.rss</span>
-            </a>
-        </span>
-    
-</div>
-
 
     </nav>
 </header>
@@ -212,7 +180,7 @@
         </div>
         
 <blockquote class="copyright">
-    <p><strong>本文链接 : </strong><a class="permalink" href="http://yoursite.com/2021/06/27/JVM%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/">http://yoursite.com/2021/06/27/JVM双亲委派模型笔记/</a></p>
+    <p><strong>本文链接 : </strong><a class="permalink" href="https://chingkwok.github.io/2021/06/27/JVM%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%E7%AC%94%E8%AE%B0/">https://chingkwok.github.io/2021/06/27/JVM双亲委派模型笔记/</a></p>
     <p><strong>This article is available under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a> License</strong></p>
 </blockquote>
 
@@ -244,26 +212,6 @@
 
         </section>
         <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
-    
-    <div class="footer-social-links">
-        
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-github"></i>
-            </a>
-        
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-telegram"></i>
-            </a>
-        
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont icon-twitter"></i>
-            </a>
-        
-            <a href="/atom.xml">
-                <i class="iconfont icon-rss"></i>
-            </a>
-        
-    </div>
     
     
 </footer>

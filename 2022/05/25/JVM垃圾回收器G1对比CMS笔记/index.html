@@ -7,7 +7,7 @@
     <meta name="description" content="JVM垃圾回收器G1和CMS因为在学习JVM的垃圾回收器的过程中，发现CMS这个垃圾回收器在JDK版本中几乎没有出场，取而代之的是类似于CMS的G1收集器，这篇笔记记录下这两者的异同，以及CMS退居幕后的原因。 CMS收集器CMS（Concurrent Mark Sweep）收集器是一种以获取最短回收停顿时间为目标的收集器。这是因为CMS收集器工作时，GC工作线程与用户线程可以并发执行，以此来达到">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM垃圾回收器G1对比CMS笔记">
-<meta property="og:url" content="http://yoursite.com/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:url" content="https://chingkwok.github.io/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="ChingKwok的书斋">
 <meta property="og:description" content="JVM垃圾回收器G1和CMS因为在学习JVM的垃圾回收器的过程中，发现CMS这个垃圾回收器在JDK版本中几乎没有出场，取而代之的是类似于CMS的G1收集器，这篇笔记记录下这两者的异同，以及CMS退居幕后的原因。 CMS收集器CMS（Concurrent Mark Sweep）收集器是一种以获取最短回收停顿时间为目标的收集器。这是因为CMS收集器工作时，GC工作线程与用户线程可以并发执行，以此来达到">
 <meta property="og:locale" content="zh_CN">
@@ -48,7 +48,7 @@
                 <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
             </a>
             <h2 id="name" class="hidden lg:block">GuoChing</h2>
-            <h3 id="title" class="hidden lg:block">在广州的一位萌新的Web开发</h3>
+            <h3 id="title" class="hidden lg:block">在广州的一位3年萌新Web开发</h3>
             
             <small id="location" class="hidden lg:block">
                 <i class="iconfont icon-map-icon"></i>
@@ -114,38 +114,6 @@
             </div>
         
         
-<div class="social-links flex sm:flex-col lg:hidden mt-5">
-    
-        <span class="social-item text-center">
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-github"></i>
-                <span class="menu-title hidden lg:inline">menu.github</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-telegram"></i>
-                <span class="menu-title hidden lg:inline">menu.telegram</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-twitter"></i>
-                <span class="menu-title hidden lg:inline">menu.twitter</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="/atom.xml">
-                <i class="iconfont social-icon icon-rss"></i>
-                <span class="menu-title hidden lg:inline">menu.rss</span>
-            </a>
-        </span>
-    
-</div>
-
 
     </nav>
 </header>
@@ -228,7 +196,7 @@
         </div>
         
 <blockquote class="copyright">
-    <p><strong>本文链接 : </strong><a class="permalink" href="http://yoursite.com/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/">http://yoursite.com/2022/05/25/JVM垃圾回收器G1对比CMS笔记/</a></p>
+    <p><strong>本文链接 : </strong><a class="permalink" href="https://chingkwok.github.io/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/">https://chingkwok.github.io/2022/05/25/JVM垃圾回收器G1对比CMS笔记/</a></p>
     <p><strong>This article is available under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a> License</strong></p>
 </blockquote>
 
@@ -260,26 +228,6 @@
 
         </section>
         <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
-    
-    <div class="footer-social-links">
-        
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-github"></i>
-            </a>
-        
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-telegram"></i>
-            </a>
-        
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont icon-twitter"></i>
-            </a>
-        
-            <a href="/atom.xml">
-                <i class="iconfont icon-rss"></i>
-            </a>
-        
-    </div>
     
     
 </footer>

@@ -7,7 +7,7 @@
     <meta name="description" content="HashMap源码学习笔记HashMap核心属性解析DEFAULT_INITIAL_CAPACITY（默认初始容量）默认初始容量是在构造HashMap时，不定义初始容量默认指定的大小，默认大小为1&lt;&lt;4也就是16； MAXIMUM_CAPACITY（最大容量）最大容量是单个HashMap实例所能装载的最大容量，值为1&lt;&lt;30，也就是536,870,912个元素； DEFAU">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HashMap源码学习笔记">
-<meta property="og:url" content="http://yoursite.com/2020/09/16/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:url" content="https://chingkwok.github.io/2020/09/16/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
 <meta property="og:site_name" content="ChingKwok的书斋">
 <meta property="og:description" content="HashMap源码学习笔记HashMap核心属性解析DEFAULT_INITIAL_CAPACITY（默认初始容量）默认初始容量是在构造HashMap时，不定义初始容量默认指定的大小，默认大小为1&lt;&lt;4也就是16； MAXIMUM_CAPACITY（最大容量）最大容量是单个HashMap实例所能装载的最大容量，值为1&lt;&lt;30，也就是536,870,912个元素； DEFAU">
 <meta property="og:locale" content="zh_CN">
@@ -47,7 +47,7 @@
                 <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
             </a>
             <h2 id="name" class="hidden lg:block">GuoChing</h2>
-            <h3 id="title" class="hidden lg:block">在广州的一位萌新的Web开发</h3>
+            <h3 id="title" class="hidden lg:block">在广州的一位3年萌新Web开发</h3>
             
             <small id="location" class="hidden lg:block">
                 <i class="iconfont icon-map-icon"></i>
@@ -113,38 +113,6 @@
             </div>
         
         
-<div class="social-links flex sm:flex-col lg:hidden mt-5">
-    
-        <span class="social-item text-center">
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-github"></i>
-                <span class="menu-title hidden lg:inline">menu.github</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-telegram"></i>
-                <span class="menu-title hidden lg:inline">menu.telegram</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-twitter"></i>
-                <span class="menu-title hidden lg:inline">menu.twitter</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="/atom.xml">
-                <i class="iconfont social-icon icon-rss"></i>
-                <span class="menu-title hidden lg:inline">menu.rss</span>
-            </a>
-        </span>
-    
-</div>
-
 
     </nav>
 </header>
@@ -209,7 +177,7 @@
         </div>
         
 <blockquote class="copyright">
-    <p><strong>本文链接 : </strong><a class="permalink" href="http://yoursite.com/2020/09/16/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">http://yoursite.com/2020/09/16/HashMap源码解析/</a></p>
+    <p><strong>本文链接 : </strong><a class="permalink" href="https://chingkwok.github.io/2020/09/16/HashMap%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">https://chingkwok.github.io/2020/09/16/HashMap源码解析/</a></p>
     <p><strong>This article is available under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a> License</strong></p>
 </blockquote>
 
@@ -241,26 +209,6 @@
 
         </section>
         <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
-    
-    <div class="footer-social-links">
-        
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-github"></i>
-            </a>
-        
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-telegram"></i>
-            </a>
-        
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont icon-twitter"></i>
-            </a>
-        
-            <a href="/atom.xml">
-                <i class="iconfont icon-rss"></i>
-            </a>
-        
-    </div>
     
     
 </footer>

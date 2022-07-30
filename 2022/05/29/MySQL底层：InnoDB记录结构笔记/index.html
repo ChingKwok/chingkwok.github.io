@@ -7,7 +7,7 @@
     <meta name="description" content="Mysql底层——InnoDB记录结构页默认 16K 大小一页，每页至少两条记录 名词说明： W : 某个字符集中单字符的最大字节 M : 某个数据类型能存储的最大字符 L : 实际存储的字节数，最大等于 W * M 行格式四种行格式：Compact、Redundant、Dynamic（默认）、Compressed Dynamic：与 Compact 的区别在于溢出页，会将溢出的字段整个放入 溢出">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL底层：InnoDB记录结构笔记">
-<meta property="og:url" content="http://yoursite.com/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:url" content="https://chingkwok.github.io/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="ChingKwok的书斋">
 <meta property="og:description" content="Mysql底层——InnoDB记录结构页默认 16K 大小一页，每页至少两条记录 名词说明： W : 某个字符集中单字符的最大字节 M : 某个数据类型能存储的最大字符 L : 实际存储的字节数，最大等于 W * M 行格式四种行格式：Compact、Redundant、Dynamic（默认）、Compressed Dynamic：与 Compact 的区别在于溢出页，会将溢出的字段整个放入 溢出">
 <meta property="og:locale" content="zh_CN">
@@ -48,7 +48,7 @@
                 <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
             </a>
             <h2 id="name" class="hidden lg:block">GuoChing</h2>
-            <h3 id="title" class="hidden lg:block">在广州的一位萌新的Web开发</h3>
+            <h3 id="title" class="hidden lg:block">在广州的一位3年萌新Web开发</h3>
             
             <small id="location" class="hidden lg:block">
                 <i class="iconfont icon-map-icon"></i>
@@ -114,38 +114,6 @@
             </div>
         
         
-<div class="social-links flex sm:flex-col lg:hidden mt-5">
-    
-        <span class="social-item text-center">
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-github"></i>
-                <span class="menu-title hidden lg:inline">menu.github</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-telegram"></i>
-                <span class="menu-title hidden lg:inline">menu.telegram</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-twitter"></i>
-                <span class="menu-title hidden lg:inline">menu.twitter</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="/atom.xml">
-                <i class="iconfont social-icon icon-rss"></i>
-                <span class="menu-title hidden lg:inline">menu.rss</span>
-            </a>
-        </span>
-    
-</div>
-
 
     </nav>
 </header>
@@ -230,7 +198,7 @@
         </div>
         
 <blockquote class="copyright">
-    <p><strong>本文链接 : </strong><a class="permalink" href="http://yoursite.com/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/">http://yoursite.com/2022/05/29/MySQL底层：InnoDB记录结构笔记/</a></p>
+    <p><strong>本文链接 : </strong><a class="permalink" href="https://chingkwok.github.io/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/">https://chingkwok.github.io/2022/05/29/MySQL底层：InnoDB记录结构笔记/</a></p>
     <p><strong>This article is available under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a> License</strong></p>
 </blockquote>
 
@@ -262,26 +230,6 @@
 
         </section>
         <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
-    
-    <div class="footer-social-links">
-        
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-github"></i>
-            </a>
-        
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-telegram"></i>
-            </a>
-        
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont icon-twitter"></i>
-            </a>
-        
-            <a href="/atom.xml">
-                <i class="iconfont icon-rss"></i>
-            </a>
-        
-    </div>
     
     
 </footer>

@@ -7,7 +7,7 @@
     <meta name="description" content="Java的线程安全和锁优化线程安全在Java中或者说在Jvm实现中，线程安全是一个相对的概念，某个对象在单独使用某个操作时是线程安全的，但在某些操作顺序却不是线程安全，需要额外的同步。该节将介绍线程安全的概念和在Java中的实现。 Java语言中的线程安全不可变final类型的基本类型，在初始化时，如果没有发生this引用逃逸正确地初始化，在以后的使用中值不会变更，是线程安全的；对象行为不会对自身">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java的线程安全和锁优化">
-<meta property="og:url" content="http://yoursite.com/2020/07/21/Java%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:url" content="https://chingkwok.github.io/2020/07/21/Java%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96/index.html">
 <meta property="og:site_name" content="ChingKwok的书斋">
 <meta property="og:description" content="Java的线程安全和锁优化线程安全在Java中或者说在Jvm实现中，线程安全是一个相对的概念，某个对象在单独使用某个操作时是线程安全的，但在某些操作顺序却不是线程安全，需要额外的同步。该节将介绍线程安全的概念和在Java中的实现。 Java语言中的线程安全不可变final类型的基本类型，在初始化时，如果没有发生this引用逃逸正确地初始化，在以后的使用中值不会变更，是线程安全的；对象行为不会对自身">
 <meta property="og:locale" content="zh_CN">
@@ -51,7 +51,7 @@
                 <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
             </a>
             <h2 id="name" class="hidden lg:block">GuoChing</h2>
-            <h3 id="title" class="hidden lg:block">在广州的一位萌新的Web开发</h3>
+            <h3 id="title" class="hidden lg:block">在广州的一位3年萌新Web开发</h3>
             
             <small id="location" class="hidden lg:block">
                 <i class="iconfont icon-map-icon"></i>
@@ -117,38 +117,6 @@
             </div>
         
         
-<div class="social-links flex sm:flex-col lg:hidden mt-5">
-    
-        <span class="social-item text-center">
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-github"></i>
-                <span class="menu-title hidden lg:inline">menu.github</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-telegram"></i>
-                <span class="menu-title hidden lg:inline">menu.telegram</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont social-icon icon-twitter"></i>
-                <span class="menu-title hidden lg:inline">menu.twitter</span>
-            </a>
-        </span>
-    
-        <span class="social-item text-center">
-            <a href="/atom.xml">
-                <i class="iconfont social-icon icon-rss"></i>
-                <span class="menu-title hidden lg:inline">menu.rss</span>
-            </a>
-        </span>
-    
-</div>
-
 
     </nav>
 </header>
@@ -206,7 +174,7 @@
         </div>
         
 <blockquote class="copyright">
-    <p><strong>本文链接 : </strong><a class="permalink" href="http://yoursite.com/2020/07/21/Java%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96/">http://yoursite.com/2020/07/21/Java的线程安全和锁优化/</a></p>
+    <p><strong>本文链接 : </strong><a class="permalink" href="https://chingkwok.github.io/2020/07/21/Java%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96/">https://chingkwok.github.io/2020/07/21/Java的线程安全和锁优化/</a></p>
     <p><strong>This article is available under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a> License</strong></p>
 </blockquote>
 
@@ -238,26 +206,6 @@
 
         </section>
         <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
-    
-    <div class="footer-social-links">
-        
-            <a href="https://github.com/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-github"></i>
-            </a>
-        
-            <a href="https://t.me/fengkx" target="_blank" rel="noopener">
-                <i class="iconfont icon-telegram"></i>
-            </a>
-        
-            <a href="https://twitter.com/example" target="_blank" rel="noopener">
-                <i class="iconfont icon-twitter"></i>
-            </a>
-        
-            <a href="/atom.xml">
-                <i class="iconfont icon-rss"></i>
-            </a>
-        
-    </div>
     
     
 </footer>
