@@ -1,0 +1,278 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ChingKwok的书斋</title><meta name="description"><meta name="author" content="ChingKwok"><meta name="copyright" content="ChingKwok"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/page/3/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Re4U4UpYHA7F_Og7PltHgkwTqrrr6UB33Fq4F82dlPI"/><meta name="baidu-site-verification" content="8k6CfmzW23"/><meta property="og:type" content="website"><meta property="og:title" content="ChingKwok的书斋"><meta property="og:url" content="http://yoursite.com/page/3/"><meta property="og:site_name" content="ChingKwok的书斋"><meta property="og:description"><meta property="og:image" content="http://yoursite.com/img/avatar.jpeg"><meta property="article:published_time" content="2022-07-30T10:01:03.441Z"><meta property="article:modified_time" content="2022-07-30T10:01:03.441Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'false'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: false,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isSidebar: false
+  }</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 4.2.1"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/img/avatar.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">34</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">19</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于博主</span></a></div></div></div></div><div id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(https://image.chingk.com/img/2020/07/nyanCat2.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">ChingKwok的书斋</a></span><span class="pull-right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于博主</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="site-info"><h1 id="site_title">ChingKwok的书斋</h1><div id="site_subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/ChingKwok" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:chingkwok2019@outlook.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div id="scroll_down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout_page" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/07/21/RabbitMQ%E7%9A%84%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%B1%BB%E5%9E%8B/" title="RabbitMQ的交换机类型">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RabbitMQ的交换机类型"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/07/21/RabbitMQ%E7%9A%84%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%B1%BB%E5%9E%8B/" title="RabbitMQ的交换机类型">RabbitMQ的交换机类型</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-07-21 23:13:58"><i class="far fa-calendar-alt"></i>2020-07-21</time></div><div class="content">RabbitMQ的交换机类型fanout路由到与该交换机绑定的所有队列中去
+direct路由到BindingKey和Routingkey相同的队列中去
+topic
+路由到BingdingKey和RoutingKey匹配的队列中去
+
+匹配规则
+
+RoutingKey是以“.”分隔的字符串
+BindingKey也是以“.”分隔的字符串
+BindingKey中可以使用“*”和“#”两个符号进行模糊匹配，“*”匹配一个字符，“#”匹配零或多个字符
+
+
+
+headers该类型不依赖路由键匹配来路由，而是根据发送的消息中的headers属性（键值对）进行匹配，在绑定队列和交换机时指定一组键值对，headers属性和指定的键值对进行匹配，键值对完全匹配则进行路由
+</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/07/21/Java%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96/" title="Java的线程安全和锁优化">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java的线程安全和锁优化"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/07/21/Java%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96/" title="Java的线程安全和锁优化">Java的线程安全和锁优化</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-07-21 11:13:02"><i class="far fa-calendar-alt"></i>2020-07-21</time></div><div class="content">Java的线程安全和锁优化线程安全在Java中或者说在Jvm实现中，线程安全是一个相对的概念，某个对象在单独使用某个操作时是线程安全的，但在某些操作顺序却不是线程安全，需要额外的同步。该节将介绍线程安全的概念和在Java中的实现。
+Java语言中的线程安全不可变final类型的基本类型，在初始化时，如果没有发生this引用逃逸正确地初始化，在以后的使用中值不会变更，是线程安全的；对象行为不会对自身状态变更的对象，所有的行为都不会对自身进行变更，如java.lang.String类，subString()、trim()等方法都是返回一个目标值而对自身的变量不进行变更，也是线程安全的。
+绝对线程安全不需要做任何额外的同步，在多线程环境中都能得到正确的结果的变量，实际上这种要求很严苛，因为就算是“线程安全”的类，在某些操作顺序中也会导致不正确的结果，而需要额外的同步块进行同步控制。
+相对线程安全对象的单独调用时，是线程安全的，但是在一些特定的调用顺序中，需要额外的同步保证线程安全，如HashTable类
+线程兼容对象本身不是线程安全的，但是通过同步手段保证对象在并发中安全使用
+线程对立无论是 ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/07/19/Java%E4%B8%8E%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" title="Java与线程模型">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java与线程模型"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/07/19/Java%E4%B8%8E%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" title="Java与线程模型">Java与线程模型</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-07-19 23:35:09"><i class="far fa-calendar-alt"></i>2020-07-19</time></div><div class="content">Java与线程模型线程的实现内核线程实现
+定义：内核线程（Kernel-Level Thread，KLT）：直接由操作系统内核支持的线程，由内核来完成线程切换
+
+优势：实现依赖内核，实现简单
+
+劣势：部分操作需要从用户态切换到内核态，开销较大
+
+
+用户线程实现
+定义
+
+广义：一个线程不是内核线程，就可以认为是用户线程，在这个定义上讲，轻量级进程也是用户线程，但是轻量级进程的实现是建立在内核之上的，需要进行系统调用，效率会受到影响
+狭义：用户线程指的是完全建立在用户空间的线程库上的线程实现，内核无法感知到用户线程。用户线程的建立、同步、销毁和调度在用户态完成，无需切换到内核态，操作消耗较低。
+
+
+优势
+
+操作消耗低
+支持规模更大的线程数量
+
+
+劣势
+
+实现十分复杂
+
+
+
+用户线程+轻量级进程混合实现
+定义
+
+轻量级进程（Light Weight Process，LWP）：内核线程的一个高级接口，通常意义上的线程，每个轻量级进程都有一个内核线程支持
+用户线程+轻量级进程混合实现：轻量级进程作为用户线程和内核线程的桥梁，使得用户线程可以使用内核提供的线程调度功能、处理器映射。用户线程和轻量级 ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/07/18/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%9B%9B%E7%A7%8D%E9%A2%84%E8%AE%BE%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F%E5%92%8C%E5%8E%9F%E7%94%9F%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F/" title="Java线程池的四种预设创建方式和原生创建方式">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java线程池的四种预设创建方式和原生创建方式"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/07/18/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%9B%9B%E7%A7%8D%E9%A2%84%E8%AE%BE%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F%E5%92%8C%E5%8E%9F%E7%94%9F%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F/" title="Java线程池的四种预设创建方式和原生创建方式">Java线程池的四种预设创建方式和原生创建方式</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-07-18 12:11:46"><i class="far fa-calendar-alt"></i>2020-07-18</time></div><div class="content">Java线程池什么是线程池？线程池负责维护一个或多个线程的运行，让我们在实际的项目编码中不用自己编写维护线程的逻辑，简化编程，提高代码的鲁棒性，易读性。
+线程池的创建方法通过java.util.concurrent.ThreadPoolExecutor创建构造方法ThreadPoolExecutor构造方法
+12345678910    public ThreadPoolExecutor(int corePoolSize,                          int maximumPoolSize,                          long keepAliveTime,                          TimeUnit unit,                          BlockingQueue&lt;Runnable&gt; workQueue,                          ThreadFactory threadFactory,                          RejectedEx ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/07/14/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%B8%89-%E5%88%97%E8%A1%A8/" title="Redis学习笔记(二)：redis的数据结构(三)列表">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis学习笔记(二)：redis的数据结构(三)列表"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/07/14/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%B8%89-%E5%88%97%E8%A1%A8/" title="Redis学习笔记(二)：redis的数据结构(三)列表">Redis学习笔记(二)：redis的数据结构(三)列表</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-07-14 17:33:20"><i class="far fa-calendar-alt"></i>2020-07-14</time></div><div class="content">数据结构——列表（List）什么是列表？Redis列表是一串字符串列表，按照插入顺序排序，可以从左边（头部）或者右边（尾部）进行数据的插入，一个列表最大支持2^32-1个元素插入。
+
+常用命令添加从右边插入元素1rpush key value [value ...]
+从左边插入元素1lpush key value [value ...]
+
+向某个元素前/后插入元素1linsert key before|after pivot value
+
+查找获取指定范围内元素列表1lrange key start end
+
+获取指定索引下标元素1lindex key index
+
+获取列长度1llen key
+
+删除从左边弹出元素1lpop key
+
+从右边弹出元素1rpop key
+
+删除指定元素1lrem key count value
+
+按照索引范围修整列表1ltrim key start end
+
+阻塞阻塞弹出1brpop&#x2F;blpop key [keys] seconds
+
+内部编码
+ziplist  哈希类型元素小于hash-max-ziplist-entries(默认512个) ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/07/09/HotSpot-Jvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%B8%B8%E7%94%A8%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/" title="HotSpot Jvm虚拟机常用调优参数">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="HotSpot Jvm虚拟机常用调优参数"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/07/09/HotSpot-Jvm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%B8%B8%E7%94%A8%E8%B0%83%E4%BC%98%E5%8F%82%E6%95%B0/" title="HotSpot Jvm虚拟机常用调优参数">HotSpot Jvm虚拟机常用调优参数</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-07-09 21:50:06"><i class="far fa-calendar-alt"></i>2020-07-09</time></div><div class="content">Jvm调优的目的
+为使得jvm虚拟机在不同硬件配置的机器上获取更好的性能，以及更好的稳定性，调整默认的jvm可以使得我们的程序在性能上有所提升。如：
+
+
+如项目中有大量的新对象的寿命很短，可以适当把新生代的大小调整到合适的大小。
+调整新生代进入老年代的阈值，使得避免新生代多次复制GC一些大概率会进入老年代的对象。
+
+注意：JVM调优需要针对当前项目的特点进行调整，最好在调优前使用分析插件分析程序在运行时的内存使用情况，再针对性进行优化。
+JVM常用的优化参数堆最大大小1-Xmx1024m
+
+堆初始大小1-Xms1024m
+
+新生代大小1-Xmn256m
+
+单个栈最大大小1-Xss 1m
+新生代分区比例 8:21-XX:SurvivorRatio&#x3D;8
+调整对象直接在老年代分配的阈值，单位K1-XX:PretenureSizeThreshold&#x3D;3145728</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/03/02/Centos%E7%9A%84mysql%E5%AE%89%E8%A3%85/" title="Centos的mysql安装">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Centos的mysql安装"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/03/02/Centos%E7%9A%84mysql%E5%AE%89%E8%A3%85/" title="Centos的mysql安装">Centos的mysql安装</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-03-02 17:28:35"><i class="far fa-calendar-alt"></i>2020-03-02</time></div><div class="content">Centos 的mysql安装下载1wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+安装 mysql 源12yum localinstall mysql57-community-release-el7-11.noarch.rpmyum repolist enabled | grep "mysql.*-community.*"  //检查 mysql 源是否安装成功
+
+安装 MySQL1yum install -y mysql-community-server
+启动Mysql服务12systemctl start mysqldsystemctl enable mysqld //开机启动
+
+获取初始密码，登录12cat /var/log/mysqld.log | grep rootmysql -uroot -p
+修改root密码12set global validate_password_policy=0; //设置密码策略为简单alter user 'root'@'localhost'  ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/02/08/Java%E8%AF%AD%E6%B3%95%E7%B3%96/" title="Java语法糖">     <img class="post_bg" data-src="https://image.chingk.com/img/2020/07suger_thumbnail.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java语法糖"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/02/08/Java%E8%AF%AD%E6%B3%95%E7%B3%96/" title="Java语法糖">Java语法糖</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-02-08 17:15:51"><i class="far fa-calendar-alt"></i>2020-02-08</time></div><div class="content">Java 语法糖1. switch支持String和枚举在jdk1.7后，switch支持String和枚举，在这之前switch只支持int、char、short、byte以及其包装类Integer、Character、Short、Byte；char则转换为ascII码值就行匹配，实际还是转换为java基本类型。
+switch在处理String和枚举类时，实际上调用了hashcode()和equal()方法进行匹配，hashcode()方法将类型转换为int，而由于哈希存在碰撞的可能性，还需要进行一次equal()进行安全校验。
+2. 泛型多种编程语言都支持泛型，泛型的实现有两种：Code specialization 和 Code sharing
+
+Code sharing的含义是共享字节码/目标代码，通过类型擦除，擦除后使用的是同一份字节码/目标代码。
+
+Java在类型擦除时按照两个规则：
+
+将所有的泛型类型用其最左边界（最顶级父类型）类型替换。
+移除所有类型参数
+
+3. 自动装箱与拆箱自动装箱是Java将int、byte、short、long、char、double、float ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/02/02/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C-%E5%93%88%E5%B8%8C/" title="Redis学习笔记(二)：redis的数据结构(二)哈希">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis学习笔记(二)：redis的数据结构(二)哈希"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/02/02/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C-%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E4%BA%8C-%E5%93%88%E5%B8%8C/" title="Redis学习笔记(二)：redis的数据结构(二)哈希">Redis学习笔记(二)：redis的数据结构(二)哈希</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-02-02 22:44:40"><i class="far fa-calendar-alt"></i>2020-02-02</time></div><div class="content">前言在前篇中，我们已经了解了redis的字符串了，接下来让我们继续学习Redis的数据结构——哈希（Hash）类型。
+
+
+数据结构——哈希（hash）什么是哈希（hash）？如果你是Java、Python的工程师，相信你对键值（key-value）对很熟悉，在redis中hash就是一个键值对结构的数据类型，即field-value，一个hash由一个或多个field-value键值对组成。
+
+
+常用命令1. 设置值1hset key field value
+
+2. 获取值1hget key field
+
+3. 删除field1hdel key field [field...]
+
+4. 计算field个数1hlen key
+
+5. 批量获取field-value1hmget key field [field...]
+
+6. 批量设置field-value1hmset key field value[field value...]
+
+7. 判断field是否存在1hexists key field
+
+8. 获取所有field1hkeys key
+
+9. 获取所有value1hvals k ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/01/25/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84(%E4%B8%80)%E5%AD%97%E7%AC%A6%E4%B8%B2/" title="Redis学习笔记(二)：redis的数据结构(一)字符串">     <img class="post_bg" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis学习笔记(二)：redis的数据结构(一)字符串"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/01/25/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9Aredis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84(%E4%B8%80)%E5%AD%97%E7%AC%A6%E4%B8%B2/" title="Redis学习笔记(二)：redis的数据结构(一)字符串">Redis学习笔记(二)：redis的数据结构(一)字符串</a><div class="article-meta-wrap"><time class="post-meta__date" title="发表于 2020-01-25 00:09:17"><i class="far fa-calendar-alt"></i>2020-01-25</time></div><div class="content">前言上一节中详细解析的什么是Redis，以及Redis能够解决什么问题，不能解决什么问题。非常好，我们终于可真正开始学习Redis了！本篇将会解析Redis数据结构中字符串的命令、适用场景，以及内部编码
+
+redis的数据结构string(字符串)redis的字符串是什么？以单个字符串存储的数据结构，是redis其他数据结构的基础。在redis中，字符串会有多种存储形式，如数字类型为整数，并小于2^63 -1时，会以int型存储，占8Byte；大于2^63-1时会转为另一种编码存储，在稍后的内部编码会做解释。
+常用命令设置值
+命令
+1set key value [ex seconds] [px milliseconds] [nx|xx]
+
+参数
+
+
+
+
+
+参数
+作用
+例子
+
+
+
+ex
+设置过期时间，单位second
+set site chingk.com ex 10
+
+
+nx
+仅当键不存在时，设置成功
+set site chingk.com nx
+
+
+xx
+仅当键存在时，设置成功（更新）
+set site chingk.com xx
+
+
+获取值1get key
+
+批量设置值1mset  ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/2/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" src="/img/avatar.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">ChingKwok</div><div class="author-info__description">热爱生活 · 坚持运动 · 效率学习</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives"><div class="headline">文章</div><div class="length_num">34</div></a></div><div class="card-info-data-item is-center">      <a href="/tags"><div class="headline">标签</div><div class="length_num">19</div></a></div></div><div class="card-info-bookmark is-center"><button class="button--animated" id="bookmark-it" title="加入书签"><i class="fas fa-bookmark"></i><span>加入书签</span></button></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/ChingKwok" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:chingkwok2019@outlook.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">Redis & Jvm 学习笔记持续更新中，欢迎收藏订阅</div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-recent-item"><div class="aside-recent-post"><a href="/2022/07/30/Redis-IO%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/07/30/Redis-IO%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" title="Redis IO线程模型">Redis IO线程模型</div><time class="aside-post_meta post-meta__date" title="发表于 2022-07-30 17:55:10">2022-07-30</time></div></a></div><div class="aside-recent-post"><a href="/2022/06/05/%E6%9C%AC%E5%9C%B0%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/06/05/%E6%9C%AC%E5%9C%B0%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/" title="本地事务实现笔记">本地事务实现笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-06-05 17:21:40">2022-06-05</time></div></a></div><div class="aside-recent-post"><a href="/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/05/29/MySQL%E5%BA%95%E5%B1%82%EF%BC%9AInnoDB%E8%AE%B0%E5%BD%95%E7%BB%93%E6%9E%84%E7%AC%94%E8%AE%B0/" title="MySQL底层：InnoDB记录结构笔记">MySQL底层：InnoDB记录结构笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-29 17:18:19">2022-05-29</time></div></a></div><div class="aside-recent-post"><a href="/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/" title="JVM垃圾回收器G1对比CMS笔记">JVM垃圾回收器G1对比CMS笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-25 16:46:31">2022-05-25</time></div></a></div><div class="aside-recent-post"><a href="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><div class="aside-post-title no-aside-cover"><div class="aside-post_title" href="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Redis数据结构源码学习笔记">Redis数据结构源码学习笔记</div><time class="aside-post_meta post-meta__date" title="发表于 2022-05-01 20:10:34">2022-05-01</time></div></a></div></div></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/TCP/" style="font-size: 16px; color: #999">TCP</a> <a href="/tags/centos/" style="font-size: 17.5px; color: #999da3">centos</a> <a href="/tags/docker/" style="font-size: 16px; color: #999">docker</a> <a href="/tags/freeMarker/" style="font-size: 17.5px; color: #999da3">freeMarker</a> <a href="/tags/git/" style="font-size: 16px; color: #999">git</a> <a href="/tags/hotspot/" style="font-size: 16px; color: #999">hotspot</a> <a href="/tags/java/" style="font-size: 22px; color: #99a9bf">java</a> <a href="/tags/jvm/" style="font-size: 22px; color: #99a9bf">jvm</a> <a href="/tags/mybatis/" style="font-size: 17.5px; color: #999da3">mybatis</a> <a href="/tags/mysql/" style="font-size: 17.5px; color: #999da3">mysql</a> <a href="/tags/rabbitmq/" style="font-size: 16px; color: #999">rabbitmq</a> <a href="/tags/redis/" style="font-size: 20.5px; color: #99a5b6">redis</a> <a href="/tags/spring/" style="font-size: 20.5px; color: #99a5b6">spring</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 17.5px; color: #999da3">多线程</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 16px; color: #999">消息队列</a> <a href="/tags/%E6%BA%90%E7%A0%81/" style="font-size: 19px; color: #99a1ac">源码</a> <a href="/tags/%E7%BA%BF%E7%A8%8B/" style="font-size: 16px; color: #999">线程</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 16px; color: #999">设计模式</a> <a href="/tags/%E9%94%81/" style="font-size: 16px; color: #999">锁</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/07/"><span class="card-archive-list-date">七月 2022</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/06/"><span class="card-archive-list-date">六月 2022</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/05/"><span class="card-archive-list-date">五月 2022</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2022/04/"><span class="card-archive-list-date">四月 2022</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/07/"><span class="card-archive-list-date">七月 2021</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/06/"><span class="card-archive-list-date">六月 2021</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/05/"><span class="card-archive-list-date">五月 2021</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/03/"><span class="card-archive-list-date">三月 2021</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item more is-center"><a class="card-archive-list-link-more" href="/archives">
+              <span>查看更多</span><i class="fas fa-angle-right"  ></i></a></li></ul></div></div><div class="card-widget card-webinfo"><div class="card-content"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="webinfo-article-name">文章数目 :</div><div class="webinfo-article-count">34</div></div><div class="webinfo-item">      <div class="webinfo-site-uv-name">本站访客数 :</div><div class="webinfo-site-uv-count" id="busuanzi_value_site_uv"></div></div><div class="webinfo-item"><div class="webinfo-site-name">本站总访问量 :</div><div class="webinfo-site-pv-count" id="busuanzi_value_site_pv"></div></div></div></div></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By ChingKwok</div><div class="framework-info"><span>驱动 </span><a href="https://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly" target="_blank" rel="noopener"><span>Butterfly</span></a></div><div class="icp"><a><img class="icp-icon" src="/img/icp.png"/><span>粤ICP备20052429号</span></a></div></div></footer></div><section class="rightside" id="rightside"><div id="rightside-config-hide"><button class="translate_chn_to_cht" id="translateLink" title="简繁转换">繁</button><button id="darkmode" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/typed.js"></script><script>var subtitleEffect = true
+if (subtitleEffect) { 
+  var typed = new Typed("#subtitle", {
+    strings: "路漫漫其修远兮，吾将上下而求索,You don't know what you don't know".split(","),
+    startDelay: 300,
+    typeSpeed: 150,
+    loop: true,
+    backSpeed: 50
+  })
+} else {
+  document.getElementById("subtitle").innerHTML = '路漫漫其修远兮，吾将上下而求索'
+}</script></body></html>

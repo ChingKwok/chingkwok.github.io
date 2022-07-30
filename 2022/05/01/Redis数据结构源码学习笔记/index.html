@@ -1,0 +1,187 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Redis数据结构源码学习笔记 | ChingKwok的书斋</title><meta name="description" content="【2022.5.28】Redis源码字符串源码字符串由两个部分组成，一个是redis对象通用结构体 RedisObject ，一个是字符串特有的 SDS(Simple Dynamic String) 简单动态字符串结构体 123456789&#x2F;&#x2F;RedisObject 16Bytesstruct RedisObject&amp;#123;	int4 type; &#x2F;&#x2F;对象类型，如字符串 4bits	int4"><meta name="keywords" content="redis,源码"><meta name="author" content="ChingKwok"><meta name="copyright" content="ChingKwok"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="Re4U4UpYHA7F_Og7PltHgkwTqrrr6UB33Fq4F82dlPI"/><meta name="baidu-site-verification" content="8k6CfmzW23"/><meta property="og:type" content="article"><meta property="og:title" content="Redis数据结构源码学习笔记"><meta property="og:url" content="http://yoursite.com/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><meta property="og:site_name" content="ChingKwok的书斋"><meta property="og:description" content="【2022.5.28】Redis源码字符串源码字符串由两个部分组成，一个是redis对象通用结构体 RedisObject ，一个是字符串特有的 SDS(Simple Dynamic String) 简单动态字符串结构体 123456789&#x2F;&#x2F;RedisObject 16Bytesstruct RedisObject&amp;#123;	int4 type; &#x2F;&#x2F;对象类型，如字符串 4bits	int4"><meta property="og:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><meta property="article:published_time" content="2022-05-01T12:10:34.000Z"><meta property="article:modified_time" content="2022-05-01T12:10:34.000Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'false'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="prev" title="JVM垃圾回收器G1对比CMS笔记" href="http://yoursite.com/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/"><link rel="next" title="Redis序列化协议RESP笔记" href="http://yoursite.com/2022/04/10/Redis%E5%BA%8F%E5%88%97%E5%8C%96%E5%8D%8F%E8%AE%AERESP%E7%AC%94%E8%AE%B0/"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/disqusjs@1/dist/disqusjs.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: false,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true
+  }</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 4.2.1"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/img/avatar.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">34</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">19</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于博主</span></a></div></div></div></div><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#【2022-5-28】Redis源码"><span class="toc-number">1.</span> <span class="toc-text">【2022.5.28】Redis源码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串源码"><span class="toc-number">1.1.</span> <span class="toc-text">字符串源码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#扩容策略"><span class="toc-number">1.1.1.</span> <span class="toc-text">扩容策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字典结构"><span class="toc-number">1.2.</span> <span class="toc-text">字典结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#压缩列表（ziplist）"><span class="toc-number">1.3.</span> <span class="toc-text">压缩列表（ziplist）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#intset小整数集合"><span class="toc-number">1.4.</span> <span class="toc-text">intset小整数集合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快速列表"><span class="toc-number">1.5.</span> <span class="toc-text">快速列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#跳跃列表"><span class="toc-number">1.6.</span> <span class="toc-text">跳跃列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#随机层数"><span class="toc-number">1.6.1.</span> <span class="toc-text">随机层数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#插入过程"><span class="toc-number">1.6.2.</span> <span class="toc-text">插入过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更新过程"><span class="toc-number">1.6.3.</span> <span class="toc-text">更新过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除过程"><span class="toc-number">1.6.4.</span> <span class="toc-text">删除过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#元素排名"><span class="toc-number">1.6.5.</span> <span class="toc-text">元素排名</span></a></li></ol></li></ol></li></ol></div></div></div><div id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">ChingKwok的书斋</a></span><span class="pull-right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down menus-expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于博主</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Redis数据结构源码学习笔记</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2022-05-01 20:10:34"><i class="far fa-calendar-alt fa-fw"></i> 发表于 2022-05-01</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="Updated 2022-05-01 20:10:34"><i class="fas fa-history fa-fw"></i> Updated 2022-05-01</span></time></div><div class="meta-secondline"> </div><div class="meta-thirdline"><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta__icon"></i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"><span class="post-meta__separator">|</span><i class="far fa-comments fa-fw post-meta__icon"></i><span>评论数:</span><span class="disqus-comment-count comment-count"><a href="http://yoursite.com/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#disqus_thread"></a></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="【2022-5-28】Redis源码"><a href="#【2022-5-28】Redis源码" class="headerlink" title="【2022.5.28】Redis源码"></a>【2022.5.28】Redis源码</h1><h2 id="字符串源码"><a href="#字符串源码" class="headerlink" title="字符串源码"></a>字符串源码</h2><p>字符串由两个部分组成，一个是redis对象通用结构体 <code>RedisObject</code> ，一个是字符串特有的 <code>SDS(Simple Dynamic String)</code> 简单动态字符串结构体</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//RedisObject 16Bytes</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RedisObject</span>&#123;</span></span><br><span class="line">	int4 type; <span class="comment">//对象类型，如字符串 4bits</span></span><br><span class="line">	int4 encoding;  <span class="comment">//编码类型  4bits</span></span><br><span class="line">	int24 lru;   <span class="comment">//LRU信息，用于淘汰key 24bits</span></span><br><span class="line">	int32 refcount;   <span class="comment">//引用计数器 4Bytes</span></span><br><span class="line">  <span class="keyword">void</span> *ptr;    <span class="comment">//指向实际存储位置的指针，也就是指向SDS的指针 根据系统位数不同64位系统是 8Bytes</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SDS &gt;=3Bytes</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SDS</span>&lt;T&gt;&#123;</span></span><br><span class="line">	T capacity;  <span class="comment">//分配的数组的长度，content的长度</span></span><br><span class="line">	T len;  <span class="comment">//实际存储的字符串的长度</span></span><br><span class="line">	<span class="keyword">byte</span> flags;  <span class="comment">//标志位</span></span><br><span class="line">	<span class="keyword">byte</span>[] contents; <span class="comment">//内容数组</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字符串的编码分为两种： <code>embstr</code> 和 <code>raw</code></p>
+<p>embstr</p>
+<p>使用 <code>malloc</code> 方法申请空间， <code>jemalloc</code> 分配空间大小是2/4/8/16/32/64字节，因为embstr最小需要19Bytes，所以给 <code>embstr</code> 最小分配32字节空间，稍微长一些就是64字节空间，Redis的逻辑是当embstr空间大于64字节时，转为 <code>raw</code> 存储</p>
+<p>因为字符串为了便于使用 <code>glibc</code> 函数处理，以及便于调试打印输出，所以在实际存储中，会在字符串数组末尾加入 <code>NULL</code> 字符，占用1Byte</p>
+<p>embstr编码下，字符串的最大字符数是：64-19-1=44Bytes</p>
+<p>raw</p>
+<p>与embstr不同，embstr是调用一次malloc函数申请空间，raw是调用两次malloc函数，申请两块不连续的空间，使用 <code>RedisObject</code> 中的 <code>*ptr</code> 指针进行指向SDS，在字符串大于44Bytes时会使用raw格式存储</p>
+<h3 id="扩容策略"><a href="#扩容策略" class="headerlink" title="扩容策略"></a>扩容策略</h3><p>当字符串小于1MB时，扩容contents数组时加倍扩容，而大于1MB时，每次扩容多分配1MB空间</p>
+<h2 id="字典结构"><a href="#字典结构" class="headerlink" title="字典结构"></a>字典结构</h2><p>字典结构应用到的地方由很多，比如redis作为远程字典服务器本身就是一个由key和value大字典，而在zset集合中score和value值也是一个字典，以及key的过期时间存储也是由字典实现。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//redisDB </span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RedisDb</span>&#123;</span></span><br><span class="line">	dict* dict;  <span class="comment">//所有的key key-&gt;value</span></span><br><span class="line">	dict* expires; <span class="comment">//所有的key的过期时间  key-&gt;long(timestamp)</span></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//zset</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">zset</span> &#123;</span></span><br><span class="line">	dict *dict;  <span class="comment">//所有value value-&gt;score</span></span><br><span class="line">	zskiplist *zsl;  <span class="comment">//跳表</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字典结构中主要是有两个hashtable</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//dict</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line">	...</span><br><span class="line">	dictht ht[<span class="number">2</span>];  <span class="comment">//两个hashtable，用于在扩容时作为渐进式搬运的临时ht</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//dictht</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line">	dictEntry** table;   <span class="comment">//指向数组的指针</span></span><br><span class="line">	<span class="keyword">long</span> <span class="built_in">size</span>;  <span class="comment">//第一维数组的长度</span></span><br><span class="line">  <span class="keyword">long</span> used;  <span class="comment">//hash表中的元素个数</span></span><br><span class="line">  ...  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//dictEntry</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></span><br><span class="line">	<span class="keyword">void</span>* key;</span><br><span class="line">	<span class="keyword">void</span>* val;</span><br><span class="line">	dictEntry* next;  <span class="comment">//指向下一个entry的指针</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>hash中的关键逻辑</p>
+<ul>
+<li>渐进式rehash：因为rehash是一个 <code>O(n)</code> 时间复杂度的操作，redis在rehash中维护两个hashtable，一个旧一个新，新增的entry会新增到新hash中，并且旧hash会逐渐在hset、hdel逻辑中主动搬运，如果没有这些操作，也会在定时任务中进行搬运。</li>
+<li>hash函数会保证尽可能的使得元素在hashtable中均匀分布，但是如果有针对性的hash攻击，也会使得查找退化到O(n)</li>
+<li>扩容逻辑：hash元素总数等于数组长度时开始扩容，尽量保证查找效率为 <code>O(1)</code> ，扩容为原数组大小的两倍，但如果在 <code>bgsave</code> 过程中，则会推延扩容直到元素总数达到数组长度的5倍，就会触发强制扩容</li>
+<li>缩容逻辑：hash元素总数小于数组长度的10%时，触发缩容，缩容不会考虑 <code>bgsave</code></li>
+</ul>
+<h2 id="压缩列表（ziplist）"><a href="#压缩列表（ziplist）" class="headerlink" title="压缩列表（ziplist）"></a>压缩列表（ziplist）</h2><p>有序集合 <code>zset</code> 在元素较少 <code>（&lt;128）&amp;（len&lt;64）</code> 时，会使用 <code>ziplist</code> ，这个数据结构没有空隙，所有元素都是紧挨着存放。</p>
+<p>查找时间复杂度： <code>O(n)</code></p>
+<p>插入时间复杂度： <code>O(n)</code></p>
+<p>压缩链表结构</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ziplist</span> &#123;</span></span><br><span class="line">	int32 zlbytes; <span class="comment">//整个列表占用的字节数</span></span><br><span class="line">	int32 zltail_offset;  <span class="comment">//最后一个元素距离压缩列表起始位置的偏移量，用于定位最后一个节点</span></span><br><span class="line">	int16 zllength;  <span class="comment">//元素个数</span></span><br><span class="line">  T[] entries; <span class="comment">//元素内容数组</span></span><br><span class="line">  int8 zlend;  <span class="comment">//标记压缩列表的结束，魔法值，为0xFF</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>元素结构</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">entry</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span>&lt;var&gt; prevlen;  <span class="comment">//前一个entry的字节长度</span></span><br><span class="line">  <span class="keyword">int</span>&lt;var&gt; encoding;  <span class="comment">//元素类型编码</span></span><br><span class="line">  optional <span class="keyword">byte</span>[] content; <span class="comment">//元素内容</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ziplist关键逻辑：</p>
+<ul>
+<li>级联更新：元素结构体中的prevlen是会根据前一个元素的改变实时更新的，会触发级联更新</li>
+<li>元素结构体中的prevlen在字符串小于 <code>254</code> 时，使用一个字节，超出则使用5个字节</li>
+<li>encoding设计十分复杂，可以表示数据类型、数据长度，甚至可以直接存储极小的整数（0-12）</li>
+<li>新增元素时需要重新分配内存</li>
+</ul>
+<h2 id="intset小整数集合"><a href="#intset小整数集合" class="headerlink" title="intset小整数集合"></a>intset小整数集合</h2><p>在 <code>set</code> 集合元素都是整数且元素较少 <code>&lt;512</code> 时，会使用 <code>intset</code> 进行存储， <code>intset</code> 支持16、32、64位整数，结构为紧凑型数组。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">intset</span>&lt;T&gt; &#123;</span></span><br><span class="line">	int32 encoding; <span class="comment">//决定整数是多少位的，16/32/64</span></span><br><span class="line">  int32 length;  <span class="comment">//元素个数</span></span><br><span class="line">  <span class="keyword">int</span>&lt;T&gt; contents; <span class="comment">//整数数组</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="快速列表"><a href="#快速列表" class="headerlink" title="快速列表"></a>快速列表</h2><p>快速列表结合了 <code>ziplist</code> 和 <code>linkedlist</code> ，在元素少时，只使用 <code>ziplist</code> ，元素较多时，把 <code>ziplist</code> 使用 <code>双向循环指针</code> 链接起来，成为一个由 <code>ziplist</code> 作为元素的 <code>linkedlist</code> 。</p>
+<p>关键逻辑：</p>
+<ul>
+<li>ziplist节点本身也是可以压缩的，使用的是 <code>LZF算法</code> 压缩，可以选择压缩深度，所谓的压缩深度就是从首尾算起多少个元素可以不压缩，深度为0就是不压缩，深度大于0时越大压缩的ziplist越少。</li>
+<li>一个ziplist存储有空间限制，可以通过 <code>list-max-ziplist-size</code> 设定，默认为8KB</li>
+</ul>
+<h2 id="跳跃列表"><a href="#跳跃列表" class="headerlink" title="跳跃列表"></a>跳跃列表</h2><p>数据结构 <code>zset</code> 是复合结构，其中的结构包含了一个 <code>hash字典</code> 和 一个 <code>skiplist跳跃列表</code> ，其中 <code>skiplist</code> 是比较复杂的。</p>
+<img src= "/img/loading.gif" data-src="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/img1.png" class="" title="img1">
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//zslnode 跳表节点</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">zslnode</span> &#123;</span></span><br><span class="line">	<span class="built_in">string</span> value;</span><br><span class="line">	<span class="keyword">double</span> score;</span><br><span class="line">  zslnode*[] forwards; <span class="comment">//多层链接指针</span></span><br><span class="line">	zslnode* backward; <span class="comment">//回溯指针</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//zsl 跳表</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">zsl</span> &#123;</span></span><br><span class="line">	zslnode* header; <span class="comment">//跳跃列表表头指针(kv head)</span></span><br><span class="line">	<span class="keyword">int</span> maxLevel;  <span class="comment">//跳表最高层</span></span><br><span class="line">  <span class="built_in">map</span>&lt;<span class="built_in">string</span>, zslnode*&gt; ht; <span class="comment">//hash结构键值对</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="随机层数"><a href="#随机层数" class="headerlink" title="随机层数"></a>随机层数</h3><p>对于每一个新插入的元素，会调用一个随机算法来计算他最高处于哪个层，理论上每升一层的概率是50%，但是redis为了限制层高，把这个概率设置为了25%，也就是实际上redis中的跳表比理论的更矮。</p>
+<h3 id="插入过程"><a href="#插入过程" class="headerlink" title="插入过程"></a>插入过程</h3><ol>
+<li>首先找到搜索路径</li>
+<li>创建新节点，随机获取当前节点的层高</li>
+<li>把节点的指针指向到对应的前后节点</li>
+</ol>
+<h3 id="更新过程"><a href="#更新过程" class="headerlink" title="更新过程"></a>更新过程</h3><ol>
+<li>找到对应的节点，如果需要更新，就删除</li>
+<li>插入新节点</li>
+</ol>
+<h3 id="删除过程"><a href="#删除过程" class="headerlink" title="删除过程"></a>删除过程</h3><ol>
+<li>获取节点</li>
+<li>删除节点</li>
+</ol>
+<h3 id="元素排名"><a href="#元素排名" class="headerlink" title="元素排名"></a>元素排名</h3><p><code>rank</code> 是通过存储在 forward指针中的span（跨度）属性计算的，具体是在获取节点时，获取到搜索路径，将搜索路径中的span相加，就获得了排名了</p>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">ChingKwok</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://yoursite.com/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">http://yoursite.com/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://yoursite.com" target="_blank">ChingKwok的书斋</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/redis/">redis</a><a class="post-meta__tags" href="/tags/%E6%BA%90%E7%A0%81/">源码</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"/><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js"></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/"><img class="prev-cover" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">JVM垃圾回收器G1对比CMS笔记</div></div></a></div><div class="next-post pull-right"><a href="/2022/04/10/Redis%E5%BA%8F%E5%88%97%E5%8C%96%E5%8D%8F%E8%AE%AERESP%E7%AC%94%E8%AE%B0/"><img class="next-cover" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Redis序列化协议RESP笔记</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2020/01/20/Redis学习笔记-一-：初识redis/" title="Redis学习笔记(一)：初识redis"><img class="relatedPosts_cover" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-20</div><div class="relatedPosts_title">Redis学习笔记(一)：初识redis</div></div></a></div><div class="relatedPosts_item"><a href="/2020/07/14/Redis学习笔记-二-：redis的数据结构-三-列表/" title="Redis学习笔记(二)：redis的数据结构(三)列表"><img class="relatedPosts_cover" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-14</div><div class="relatedPosts_title">Redis学习笔记(二)：redis的数据结构(三)列表</div></div></a></div><div class="relatedPosts_item"><a href="/2020/01/25/Redis学习笔记(二)：redis的数据结构(一)字符串/" title="Redis学习笔记(二)：redis的数据结构(一)字符串"><img class="relatedPosts_cover" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-25</div><div class="relatedPosts_title">Redis学习笔记(二)：redis的数据结构(一)字符串</div></div></a></div><div class="relatedPosts_item"><a href="/2020/02/02/Redis学习笔记-二-：redis的数据结构-二-哈希/" title="Redis学习笔记(二)：redis的数据结构(二)哈希"><img class="relatedPosts_cover" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-02-02</div><div class="relatedPosts_title">Redis学习笔记(二)：redis的数据结构(二)哈希</div></div></a></div><div class="relatedPosts_item"><a href="/2021/05/03/SpringIOC源码学习笔记/" title="SpringIOC源码学习笔记"><img class="relatedPosts_cover" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-05-03</div><div class="relatedPosts_title">SpringIOC源码学习笔记</div></div></a></div><div class="relatedPosts_item"><a href="/2021/05/05/SpringAOP源码学习笔记/" title="SpringAOP源码学习笔记"><img class="relatedPosts_cover" data-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-05-05</div><div class="relatedPosts_title">SpringAOP源码学习笔记</div></div></a></div></div></div><hr><div id="post-comment"><div class="comment_headling"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div><div id="disqus_thread"></div><script>var disqus_config = function () {
+  this.page.url = 'http://yoursite.com/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/';
+  this.page.identifier = '2022/05/01/Redis数据结构源码学习笔记/';
+  this.page.title = 'Redis数据结构源码学习笔记';
+};
+(function() { 
+  var d = document, s = d.createElement('script');
+  s.src = 'https://chingkwok.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+})();
+</script><script>function getDisqusCount() {
+  var d = document, s = d.createElement('script');
+  s.src = 'https://chingkwok.disqus.com/count.js';
+  s.id = 'dsq-count-scr';
+  (d.head || d.body).appendChild(s);
+}
+
+window.addEventListener('load', getDisqusCount, false);</script></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By ChingKwok</div><div class="framework-info"><span>驱动 </span><a href="https://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://github.com/jerryc127/hexo-theme-butterfly" target="_blank" rel="noopener"><span>Butterfly</span></a></div><div class="icp"><a><img class="icp-icon" src="/img/icp.png"/><span>粤ICP备20052429号</span></a></div></div></footer></div><section class="rightside" id="rightside"><div id="rightside-config-hide"><button id="readmode" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" title="缩小字体"><i class="fas fa-minus"></i></button><button class="translate_chn_to_cht" id="translateLink" title="简繁转换">繁</button><button id="darkmode" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="scroll_to_comment fas fa-comments"></i></a><button class="close" id="mobile-toc-button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script></body></html>
