@@ -4,27 +4,6 @@
   
     
     <entry>
-      <title>Java中的显式锁</title>
-      <link href="/2022/07/31/Java%E4%B8%AD%E7%9A%84%E6%98%BE%E5%BC%8F%E9%94%81/"/>
-      <url>/2022/07/31/Java%E4%B8%AD%E7%9A%84%E6%98%BE%E5%BC%8F%E9%94%81/</url>
-      
-        <content type="html"><![CDATA[<h3 id="Lock">Lock</h3><p>Lock接口的实现必须提供和内置锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证和性能上可以不同。</p><h3 id="ReentrantLock">ReentrantLock</h3><p><code>ReentrantLock</code> 实现了与 <code>synchronized</code> 相同的可重入锁实现，并且在 <code>java1.6</code> 之后性能相差无几。对比 <code>synchronized</code> ，<code>ReentrantLock</code> 实现了可定时、可轮询、可中断的获取锁操作。</p><p>注意点：使用 <code>ReentrantLock</code> 必须使用 <code>try-finally</code> 在finally代码块中释放锁。</p><h3 id="公平锁-非公平锁">公平锁&amp;非公平锁</h3><p>公平锁保证了后请求锁的线程，会在之前请求锁的线程之后获取到锁，但是这会极大降低性能，因为线程的挂起和恢复需要的cpu周期很长。</p><p>非公平锁提供了 <code>插队</code> 的功能，在线程A释放锁，线程B恢复线程的时间中，线程C可以 <code>插队</code> 获取到锁、使用、释放锁，线程B获取到锁的时机没有变化或者略微推延，这样就提高了吞吐量。</p><h3 id="读-写锁">读-写锁</h3><p>可选项：</p><ul><li>释放优先：在释放读锁或者写锁时，如果在等待的线程有等待读锁也有等待写锁的，优先给读锁还是写锁。</li><li>读线程插队：在读锁被获取后，并且有线程在等待写锁，新的线程过来获取读锁能否立刻获取读锁，或者是等待写锁获取后再获取读锁，这里可能会引发饥饿问题。</li><li>重入性：读锁和写锁是否可重入</li><li>降级：获取写锁之后能否在不释放锁的情况下降级成读锁。</li><li>升级：获取读锁之后能否在不释放锁的情况下升级成写锁。大部分读写锁实现中不会支持升级，因为如果两个读锁持有的线程同时申请写锁，就会造成死锁</li></ul>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> java </tag>
-            
-            <tag> 多线程 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>AbstractQueuedSynchronizer(AQS)原理笔记</title>
       <link href="/2022/07/02/%E4%BB%8EAbstractQueuedSynchronizer-AQS-%E7%9C%8BReentrantLock%E7%9A%84%E5%8E%9F%E7%90%86/"/>
       <url>/2022/07/02/%E4%BB%8EAbstractQueuedSynchronizer-AQS-%E7%9C%8BReentrantLock%E7%9A%84%E5%8E%9F%E7%90%86/</url>
@@ -155,6 +134,27 @@
       <url>/2022/03/20/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/</url>
       
         <content type="html"><![CDATA[<h1 id="线程池">线程池</h1><p><strong>Executor框架</strong></p><p>基于Executor框架，通过消费者-生产者模式，把任务的提交和执行分离。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Executor</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>在Execute框架中，线程不是执行主要的抽象，任务才是。</p><p><strong>执行策略</strong></p><ul><li>在什么线程中执行任务</li><li>任务按照什么顺序执行（FIFO、LIFO、优先级）</li><li>有多少个任务能够并发执行</li><li>在队列中有多少个任务在等待执行</li><li>系统过载需要拒绝任务时，应该选哪个任务，并如何通知应用程序有任务被拒绝</li><li>执行任务之前之后，应该做哪些动作</li></ul><p><strong>ExecutorService</strong></p><p><code>ExecutorService</code> 拓展了 <code>Executor</code> ，拓展出了生命周期，用于管理处理器的生命周期，有：运行、关闭、已终止三个状态</p><p><strong>Timer和ScheduledThreadPoolExecutor区别</strong></p><ul><li><p>Timer</p><p>基于绝对时间调度机制</p><p>单线程执行，如果执行时间超过周期，则会漏执行</p><p>执行线程抛出未检查错误时不会恢复</p></li><li><p>ScheduledThreadPoolExecutor</p><p>基于相对时间调度机制</p><p>基于线程池执行</p></li></ul><p><strong>线程饥饿死锁</strong></p><p>在线程池中，执行中线程等待工作队列线程而导致死锁</p><p><strong>线程池构造参数</strong></p><ul><li><p>int corePoolSize</p><p>基本大小，决定了线程池在空闲的时候会留存多少闲置线程</p></li><li><p>int maximumPoolSize</p><p>最大大小，决定线程池同时活动线程数量的上限</p></li><li><p>long keepAliveTime</p><p>闲置线程存活时间</p></li><li><p>TimeUnit unit</p><p>时间单位</p></li><li><p>BlockingQueue workQueue</p></li><li><p>ThreadFactory threadFactory</p></li><li><p>RejectExecutionHandler handler</p><p>饱和策略：</p><ol><li>中止</li><li>调用者运行</li><li>抛弃最旧任务</li></ol></li></ul><p><strong>扩展ThreadPoolExecutor</strong></p><p>可以对线程池进行拓展，改写 <code>beforeExecute</code> 、 <code>afterExecute</code> 、 <code>terminated</code> ，实现对线程池的日志、监控、计时等功能</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> 多线程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Java中的显式锁</title>
+      <link href="/2022/03/02/Java%E4%B8%AD%E7%9A%84%E6%98%BE%E5%BC%8F%E9%94%81/"/>
+      <url>/2022/03/02/Java%E4%B8%AD%E7%9A%84%E6%98%BE%E5%BC%8F%E9%94%81/</url>
+      
+        <content type="html"><![CDATA[<h3 id="Lock">Lock</h3><p>Lock接口的实现必须提供和内置锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证和性能上可以不同。</p><h3 id="ReentrantLock">ReentrantLock</h3><p><code>ReentrantLock</code> 实现了与 <code>synchronized</code> 相同的可重入锁实现，并且在 <code>java1.6</code> 之后性能相差无几。对比 <code>synchronized</code> ，<code>ReentrantLock</code> 实现了可定时、可轮询、可中断的获取锁操作。</p><p>注意点：使用 <code>ReentrantLock</code> 必须使用 <code>try-finally</code> 在finally代码块中释放锁。</p><h3 id="公平锁-非公平锁">公平锁&amp;非公平锁</h3><p>公平锁保证了后请求锁的线程，会在之前请求锁的线程之后获取到锁，但是这会极大降低性能，因为线程的挂起和恢复需要的cpu周期很长。</p><p>非公平锁提供了 <code>插队</code> 的功能，在线程A释放锁，线程B恢复线程的时间中，线程C可以 <code>插队</code> 获取到锁、使用、释放锁，线程B获取到锁的时机没有变化或者略微推延，这样就提高了吞吐量。</p><h3 id="读-写锁">读-写锁</h3><p>可选项：</p><ul><li>释放优先：在释放读锁或者写锁时，如果在等待的线程有等待读锁也有等待写锁的，优先给读锁还是写锁。</li><li>读线程插队：在读锁被获取后，并且有线程在等待写锁，新的线程过来获取读锁能否立刻获取读锁，或者是等待写锁获取后再获取读锁，这里可能会引发饥饿问题。</li><li>重入性：读锁和写锁是否可重入</li><li>降级：获取写锁之后能否在不释放锁的情况下降级成读锁。</li><li>升级：获取读锁之后能否在不释放锁的情况下升级成写锁。大部分读写锁实现中不会支持升级，因为如果两个读锁持有的线程同时申请写锁，就会造成死锁</li></ul>]]></content>
       
       
       
