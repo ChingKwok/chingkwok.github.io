@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html  lang="zh-CN" >
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <title>Java中的显式锁 | ChingKwok的书斋</title>
+    <meta name="description" content="Lock Lock接口的实现必须提供和内置锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证和性能上可以不同。 ReentrantLock ReentrantLock 实现了与 synchronized 相同的可重入锁实现，并且在 java1.6 之后性能相差无几。对比 synchronized ，ReentrantLock 实现了可定时、可轮询、可中断的获取锁操作。 注意点：使用 Reen">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java中的显式锁">
+<meta property="og:url" content="https://chingkwok.github.io/2022/07/31/Java%E4%B8%AD%E7%9A%84%E6%98%BE%E5%BC%8F%E9%94%81/index.html">
+<meta property="og:site_name" content="ChingKwok的书斋">
+<meta property="og:description" content="Lock Lock接口的实现必须提供和内置锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证和性能上可以不同。 ReentrantLock ReentrantLock 实现了与 synchronized 相同的可重入锁实现，并且在 java1.6 之后性能相差无几。对比 synchronized ，ReentrantLock 实现了可定时、可轮询、可中断的获取锁操作。 注意点：使用 Reen">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-31T07:24:08.000Z">
+<meta property="article:modified_time" content="2022-07-31T07:24:31.772Z">
+<meta property="article:author" content="ChingKwok">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+
+    
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+    
+<link rel="stylesheet" href="/css/common.min.css">
+
+
+
+    
+    
+    
+    
+        <link href="//cdn.jsdelivr.net/npm/lightgallery.js@1.1.3/dist/css/lightgallery.min.css" rel="stylesheet">
+    
+    
+    
+<link rel="stylesheet" href="/css/iconfont.min.css">
+
+    
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+    <body>
+        <header class="header header-fixture">
+    <div class="profile-search-wrap flex sm:block">
+        
+        
+        <div class="profile sm:text-center md:px-1 lg:px-3 sm:pb-4 sm:pt-6">
+            <a id="avatar" role="link" href="https://github.com/fengkx" class="inline-block lg:w-16 lg:h-16 w-8 h-8 m-2" target="_blank" rel="noopener" rel="noreferrer" >
+                <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
+            </a>
+            <h2 id="name" class="hidden lg:block">GuoChing</h2>
+            <h3 id="title" class="hidden lg:block">在广州的一位3年萌新Web开发</h3>
+            
+            <small id="location" class="hidden lg:block">
+                <i class="iconfont icon-map-icon"></i>
+                广州
+            </small>
+            
+        </div>
+        
+        
+<div class="search flex-1 flex lg:inline-block sm:hidden lg:px-4 lg:mt-2 lg:mb-4 lg:w-full">
+    <form id="search-form" class="my-auto flex-1 lg:border lg:border-solid lg:border-gray-200">
+        <div class="input-group table bg-gray-100 lg:bg-white w-full">
+            <input id="search-input" type="text" placeholder="搜索" class="inline-block w-full bg-gray-100 lg:bg-white p-1">
+            <span class="table-cell">
+                <button name="search tigger button" disabled>
+                    <i class="iconfont icon-search m-2"></i>
+                </button>
+            </span>
+        </div>
+    </form>
+        
+<div id="content-json" data-placeholder="搜索" class="invisible hidden">/content.json</div>
+<script id="search-teamplate" type="text/html" data-path="/content.json">
+    <div>
+        <div class="search-header bg-gray-400">
+            <input id="actual-search-input" model="keyword" ref="input" class="inline-block w-full h-10 px-2 py-1" placeholder="搜索" type="text">
+        </div>
+        <div class="search-result bg-gray-200">
+            {{#each searchPosts}}
+            <a href="/{{ path }}" class="result-item block px-2 pb-3 mb-1 pt-1 hover:bg-indigo-100">
+                <i class="iconfont icon-file"></i>
+                <h1 class="result-title inline font-medium text-lg">{{ title }}</h1>
+                <p class="result-content text-gray-600 text-sm">{{{ text }}}</p>
+            </a>
+            {{/each}}
+        </div>
+    </div>
+</script>
+
+</div>
+
+
+        <button name="menu toogle button" id="menu-toggle-btn" class="block sm:hidden p-3" role="button" aria-expanded="false">
+            <i class="iconfont icon-hamburger"></i>
+        </button>
+    </div>
+    <nav id="menu-nav" class="hidden sm:flex flex-col">
+        
+        
+            <div class="menu-item menu-home" role="menuitem">
+                <a href="/.">
+                    <i class="iconfont icon-home" aria-hidden="true"></i>
+                    <span class="menu-title">首页</span>
+                </a>
+            </div>
+        
+        
+            <div class="menu-item menu-about" role="menuitem">
+                <a href="/about">
+                    <i class="iconfont icon-cup" aria-hidden="true"></i>
+                    <span class="menu-title">关于</span>
+                </a>
+            </div>
+        
+        
+
+    </nav>
+</header>
+
+        <section class="main-section">
+            
+    <main class="flex-1 px-4 py-14 md:px-5 lg:px-8 lg:py-4 relative min-h-screen">
+    
+
+    <article class="content article article-archives article-type-list" itemscope="">
+        <header class="article-header">
+            
+    
+        <h1 class="article-title text-lg" itemprop="name">
+            Java中的显式锁
+        </h1>
+    
+
+
+
+            <p class="article-meta mb-3 text-xs">
+                <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2022/07/31/Java%E4%B8%AD%E7%9A%84%E6%98%BE%E5%BC%8F%E9%94%81/" class="article-date">
+	  <time datetime="2022-07-31T07:24:08.000Z" itemprop="datePublished">7月 31</time>
+	</a>
+</span>
+
+                
+
+                
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a>
+  </span>
+
+
+                <span class="_partial/post-comment"><i class="icon icon-comment"></i>
+                    <a href="/2022/07/31/Java%E4%B8%AD%E7%9A%84%E6%98%BE%E5%BC%8F%E9%94%81/#comments" class="article-comment-link">
+                        评论
+                    </a>
+                </span>
+                
+
+            </p>
+        </header>
+        <div class="marked-body article-body">
+            <h3 id="Lock">Lock</h3>
+<p>Lock接口的实现必须提供和内置锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证和性能上可以不同。</p>
+<h3 id="ReentrantLock">ReentrantLock</h3>
+<p><code>ReentrantLock</code> 实现了与 <code>synchronized</code> 相同的可重入锁实现，并且在 <code>java1.6</code> 之后性能相差无几。对比 <code>synchronized</code> ，<code>ReentrantLock</code> 实现了可定时、可轮询、可中断的获取锁操作。</p>
+<p>注意点：使用 <code>ReentrantLock</code> 必须使用 <code>try-finally</code> 在finally代码块中释放锁。</p>
+<h3 id="公平锁-非公平锁">公平锁&amp;非公平锁</h3>
+<p>公平锁保证了后请求锁的线程，会在之前请求锁的线程之后获取到锁，但是这会极大降低性能，因为线程的挂起和恢复需要的cpu周期很长。</p>
+<p>非公平锁提供了 <code>插队</code> 的功能，在线程A释放锁，线程B恢复线程的时间中，线程C可以 <code>插队</code> 获取到锁、使用、释放锁，线程B获取到锁的时机没有变化或者略微推延，这样就提高了吞吐量。</p>
+<h3 id="读-写锁">读-写锁</h3>
+<p>可选项：</p>
+<ul>
+<li>释放优先：在释放读锁或者写锁时，如果在等待的线程有等待读锁也有等待写锁的，优先给读锁还是写锁。</li>
+<li>读线程插队：在读锁被获取后，并且有线程在等待写锁，新的线程过来获取读锁能否立刻获取读锁，或者是等待写锁获取后再获取读锁，这里可能会引发饥饿问题。</li>
+<li>重入性：读锁和写锁是否可重入</li>
+<li>降级：获取写锁之后能否在不释放锁的情况下降级成读锁。</li>
+<li>升级：获取读锁之后能否在不释放锁的情况下升级成写锁。大部分读写锁实现中不会支持升级，因为如果两个读锁持有的线程同时申请写锁，就会造成死锁</li>
+</ul>
+
+        </div>
+        
+<blockquote class="copyright">
+    <p><strong>本文链接 : </strong><a class="permalink" href="https://chingkwok.github.io/2022/07/31/Java%E4%B8%AD%E7%9A%84%E6%98%BE%E5%BC%8F%E9%94%81/">https://chingkwok.github.io/2022/07/31/Java中的显式锁/</a></p>
+    <p><strong>This article is available under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a> License</strong></p>
+</blockquote>
+
+
+    </article>
+    
+    <section id="comments">
+        
+    </section>
+
+
+    
+
+</main>
+
+
+<aside style="" id="sidebar" class="aside aside-fixture">
+    <div class="toc-sidebar">
+        <nav id="toc" class="article-toc">
+            <h3 class="toc-title">文章目录</h3>
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Lock"><span class="toc-number">1.</span> <span class="toc-text">Lock</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReentrantLock"><span class="toc-number">2.</span> <span class="toc-text">ReentrantLock</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#公平锁-非公平锁"><span class="toc-number">3.</span> <span class="toc-text">公平锁&amp;非公平锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#读-写锁"><span class="toc-number">4.</span> <span class="toc-text">读-写锁</span></a></li></ol>
+        </nav>
+    </div>
+</aside>
+
+
+
+
+
+        </section>
+        <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
+    
+    
+</footer>
+
+        <div id="mask" class="hidden mask fixed inset-0 bg-gray-900 opacity-75 z-40"></div>
+        <div id="search-view-container" class="hidden shadow-xl"></div>
+        
+<script src="/js/dom-event.min.js"></script>
+
+
+
+<script src="/js/local-search.min.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/lightgallery.js@1.1.3/dist/js/lightgallery.min.js"></script>
+    
+<script src="/js/light-gallery.min.js"></script>
+
+
+
+
+
+
+    </body>
+</html>

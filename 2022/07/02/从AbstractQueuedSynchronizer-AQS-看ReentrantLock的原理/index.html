@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html  lang="zh-CN" >
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <title>AbstractQueuedSynchronizer(AQS)原理笔记 | ChingKwok的书斋</title>
+    <meta name="description" content="队列同步器的作用 在多线程应用中，关键在于对状态依赖的管理以及对线程状态的管理。 因为资源不是无限的，如I&#x2F;O资源、内存资源、CPU资源等，需要对线程进行控制，获取不到资源的线程需要进行阻塞或者挂起，这就引入了队列同步器中的一个关键属性：队列，获取不到资源的线程需要阻塞，然后在队列中等待唤醒。 状态依赖管理 对于加锁有前验的条件验证，也就是状态依赖。如：一个阻塞队列，put的时候队列不能为满，ge">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AbstractQueuedSynchronizer(AQS)原理笔记">
+<meta property="og:url" content="https://chingkwok.github.io/2022/07/02/%E4%BB%8EAbstractQueuedSynchronizer-AQS-%E7%9C%8BReentrantLock%E7%9A%84%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="ChingKwok的书斋">
+<meta property="og:description" content="队列同步器的作用 在多线程应用中，关键在于对状态依赖的管理以及对线程状态的管理。 因为资源不是无限的，如I&#x2F;O资源、内存资源、CPU资源等，需要对线程进行控制，获取不到资源的线程需要进行阻塞或者挂起，这就引入了队列同步器中的一个关键属性：队列，获取不到资源的线程需要阻塞，然后在队列中等待唤醒。 状态依赖管理 对于加锁有前验的条件验证，也就是状态依赖。如：一个阻塞队列，put的时候队列不能为满，ge">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-02T05:41:46.000Z">
+<meta property="article:modified_time" content="2022-07-02T05:41:46.000Z">
+<meta property="article:author" content="ChingKwok">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+
+    
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+    
+<link rel="stylesheet" href="/css/common.min.css">
+
+
+
+    
+    
+    
+    
+        <link href="//cdn.jsdelivr.net/npm/lightgallery.js@1.1.3/dist/css/lightgallery.min.css" rel="stylesheet">
+    
+    
+    
+<link rel="stylesheet" href="/css/iconfont.min.css">
+
+    
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+    <body>
+        <header class="header header-fixture">
+    <div class="profile-search-wrap flex sm:block">
+        
+        
+        <div class="profile sm:text-center md:px-1 lg:px-3 sm:pb-4 sm:pt-6">
+            <a id="avatar" role="link" href="https://github.com/fengkx" class="inline-block lg:w-16 lg:h-16 w-8 h-8 m-2" target="_blank" rel="noopener" rel="noreferrer" >
+                <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
+            </a>
+            <h2 id="name" class="hidden lg:block">GuoChing</h2>
+            <h3 id="title" class="hidden lg:block">在广州的一位3年萌新Web开发</h3>
+            
+            <small id="location" class="hidden lg:block">
+                <i class="iconfont icon-map-icon"></i>
+                广州
+            </small>
+            
+        </div>
+        
+        
+<div class="search flex-1 flex lg:inline-block sm:hidden lg:px-4 lg:mt-2 lg:mb-4 lg:w-full">
+    <form id="search-form" class="my-auto flex-1 lg:border lg:border-solid lg:border-gray-200">
+        <div class="input-group table bg-gray-100 lg:bg-white w-full">
+            <input id="search-input" type="text" placeholder="搜索" class="inline-block w-full bg-gray-100 lg:bg-white p-1">
+            <span class="table-cell">
+                <button name="search tigger button" disabled>
+                    <i class="iconfont icon-search m-2"></i>
+                </button>
+            </span>
+        </div>
+    </form>
+        
+<div id="content-json" data-placeholder="搜索" class="invisible hidden">/content.json</div>
+<script id="search-teamplate" type="text/html" data-path="/content.json">
+    <div>
+        <div class="search-header bg-gray-400">
+            <input id="actual-search-input" model="keyword" ref="input" class="inline-block w-full h-10 px-2 py-1" placeholder="搜索" type="text">
+        </div>
+        <div class="search-result bg-gray-200">
+            {{#each searchPosts}}
+            <a href="/{{ path }}" class="result-item block px-2 pb-3 mb-1 pt-1 hover:bg-indigo-100">
+                <i class="iconfont icon-file"></i>
+                <h1 class="result-title inline font-medium text-lg">{{ title }}</h1>
+                <p class="result-content text-gray-600 text-sm">{{{ text }}}</p>
+            </a>
+            {{/each}}
+        </div>
+    </div>
+</script>
+
+</div>
+
+
+        <button name="menu toogle button" id="menu-toggle-btn" class="block sm:hidden p-3" role="button" aria-expanded="false">
+            <i class="iconfont icon-hamburger"></i>
+        </button>
+    </div>
+    <nav id="menu-nav" class="hidden sm:flex flex-col">
+        
+        
+            <div class="menu-item menu-home" role="menuitem">
+                <a href="/.">
+                    <i class="iconfont icon-home" aria-hidden="true"></i>
+                    <span class="menu-title">首页</span>
+                </a>
+            </div>
+        
+        
+            <div class="menu-item menu-about" role="menuitem">
+                <a href="/about">
+                    <i class="iconfont icon-cup" aria-hidden="true"></i>
+                    <span class="menu-title">关于</span>
+                </a>
+            </div>
+        
+        
+
+    </nav>
+</header>
+
+        <section class="main-section">
+            
+    <main class="flex-1 px-4 py-14 md:px-5 lg:px-8 lg:py-4 relative min-h-screen">
+    
+
+    <article class="content article article-archives article-type-list" itemscope="">
+        <header class="article-header">
+            
+    
+        <h1 class="article-title text-lg" itemprop="name">
+            AbstractQueuedSynchronizer(AQS)原理笔记
+        </h1>
+    
+
+
+
+            <p class="article-meta mb-3 text-xs">
+                <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2022/07/02/%E4%BB%8EAbstractQueuedSynchronizer-AQS-%E7%9C%8BReentrantLock%E7%9A%84%E5%8E%9F%E7%90%86/" class="article-date">
+	  <time datetime="2022-07-02T05:41:46.000Z" itemprop="datePublished">7月 2</time>
+	</a>
+</span>
+
+                
+
+                
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a>
+  </span>
+
+
+                <span class="_partial/post-comment"><i class="icon icon-comment"></i>
+                    <a href="/2022/07/02/%E4%BB%8EAbstractQueuedSynchronizer-AQS-%E7%9C%8BReentrantLock%E7%9A%84%E5%8E%9F%E7%90%86/#comments" class="article-comment-link">
+                        评论
+                    </a>
+                </span>
+                
+
+            </p>
+        </header>
+        <div class="marked-body article-body">
+            <h2 id="队列同步器的作用">队列同步器的作用</h2>
+<p>在多线程应用中，关键在于对<strong>状态依赖的管理</strong>以及对<strong>线程状态的管理</strong>。<br>
+因为资源不是无限的，如I/O资源、内存资源、CPU资源等，需要对线程进行控制，获取不到资源的线程需要进行阻塞或者挂起，这就引入了队列同步器中的一个关键属性：队列，获取不到资源的线程需要阻塞，然后在队列中等待唤醒。</p>
+<h4 id="状态依赖管理">状态依赖管理</h4>
+<p>对于加锁有前验的条件验证，也就是状态依赖。如：一个阻塞队列，put的时候队列不能为满，get的时候队列不能为空等。在一个线程安全类中，通常不止一个需要唤醒线程情况，如果使用Synchronized进行实现，就会产生不少问题，在下面会进行讲解。</p>
+<h3 id="条件队列">条件队列</h3>
+<p>如果我们能够将等待不同条件的线程分开进行管理，如一个阻塞队列，在get为空的时候阻塞，则需要被put的操作唤醒，而不是get操作，这时候就引入了<strong>条件队列</strong>这一概念了，条件队列可以使得一组线程组成一条或多条队列，对特定条件进行排队等待。</p>
+<h4 id="条件谓语">条件谓语</h4>
+<p>条件谓语就是线程能够继续执行的前验条件，一个条件队列可能会有一个或多个条件谓语，条件谓语成真时线程继续执行，否则等待谓语成真。一个条件队列就是一组线程等待一个条件谓语组成的，多个条件队列就组成了一个完整的同步工具类，如 <code>ReentrantLock</code></p>
+<h3 id="线程唤醒时的意外情况">线程唤醒时的意外情况</h3>
+<h4 id="过早唤醒">过早唤醒</h4>
+<p>由于一个条件队列中可能会有多个条件谓语，在线程被唤醒时，可能并不意味着这个线程等待的条件谓语成真，所以需要在被唤醒之后再进行一次条件谓语的验证，不为真则继续等待。</p>
+<h4 id="丢失信号">丢失信号</h4>
+<p>线程A通知了一个条件队列，线程B随后在这个条件队列中等待，线程B错过了通知需要等待另一个通知才能醒来。在线程等待之前没有做条件谓语为真的校验就会导致丢失信号。</p>
+<h2 id="AbstractQueuedSynchronizer的组成">AbstractQueuedSynchronizer的组成</h2>
+<ul>
+<li>
+<p>资源状态 State<br>
+在独占锁的场景下, 可以理解为资源占有的标识位; 在共享锁的情况下, 可以作为资源数量理解.</p>
+</li>
+<li>
+<p>双向等待队列（CLH队列）<br>
+CLH队列全称是(Craig, Landin, andHagersten) lock queue, 用来存储被阻塞的线程信息.</p>
+</li>
+</ul>
+<h3 id="独占锁和共享锁">独占锁和共享锁</h3>
+<ul>
+<li>
+<p>共享锁<br>
+可以有多个线程同时执行, 线程执行个数也会受到state限制, 如Semaphore,CountDownLatch等等</p>
+</li>
+<li>
+<p>独占锁<br>
+当前只有一个线程能够运行, 如ReentrantLock;</p>
+</li>
+</ul>
+<h3 id="公平锁和非公平锁">公平锁和非公平锁</h3>
+<ul>
+<li>公平锁<br>
+在请求资源时，如果无法获取，严格按照队列顺序，进入等待队列。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ReentrantLock.java</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    acquire(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>非公平锁<br>
+每个线程不管是否有其他线程等待, 都会先通过CAS操作尝试抢占锁, 抢占失败再去CLH队列中等待锁资源释放</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ReentrantLock.java</span></span><br><span class="line"> <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">            setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            acquire(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="CAS操作">CAS操作</h3>
+<p>AQS在获得资源状态state, 以及添加阻塞线程到CLH队尾时都是使用CAS操作解决线程间资源抢占问题的</p>
+<ul>
+<li>获取资源</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compareAndSetState(<span class="number">0</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>添加线程到CLH队尾, Node中封装线程及锁独占或共享标识</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//AbstractQueuedSynchronizer.java</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">addWaiter</span><span class="params">(Node mode)</span> </span>&#123;</span><br><span class="line">    Node node = <span class="keyword">new</span> Node(Thread.currentThread(), mode);</span><br><span class="line">    <span class="comment">// Try the fast path of enq; backup to full enq on failure</span></span><br><span class="line">    Node pred = tail;</span><br><span class="line">    <span class="keyword">if</span> (pred != <span class="keyword">null</span>) &#123;</span><br><span class="line">        node.prev = pred;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetTail(pred, node)) &#123;</span><br><span class="line">            pred.next = node;</span><br><span class="line">            <span class="keyword">return</span> node;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    enq(node);</span><br><span class="line">    <span class="keyword">return</span> node;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="线程阻塞及唤醒">线程阻塞及唤醒</h3>
+<p>在AQS中, 当线程抢占资源失败时, 会调用unsafe.park()方法阻塞线程;</p>
+<p>当其他线程释放资源时, 也会调用unsafe.unpark()唤醒线程;</p>
+<h3 id="条件谓语-2">条件谓语</h3>
+<p>AQS中将条件谓语封装成 <code>Condition</code> ，一个 <code>Condition</code> 会记录线程等待头节点和尾节点，实现在唤醒时对需要的阻塞线程进行唤醒</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//AbstractQueuedSynchronizer.java</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConditionObject</span> <span class="keyword">implements</span> <span class="title">Condition</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1173984872572414699L</span>;</span><br><span class="line">        <span class="comment">/** First node of condition queue. */</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">transient</span> Node firstWaiter;</span><br><span class="line">        <span class="comment">/** Last node of condition queue. */</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">transient</span> Node lastWaiter;</span><br><span class="line">        <span class="comment">//省略其他代码</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+        </div>
+        
+<blockquote class="copyright">
+    <p><strong>本文链接 : </strong><a class="permalink" href="https://chingkwok.github.io/2022/07/02/%E4%BB%8EAbstractQueuedSynchronizer-AQS-%E7%9C%8BReentrantLock%E7%9A%84%E5%8E%9F%E7%90%86/">https://chingkwok.github.io/2022/07/02/从AbstractQueuedSynchronizer-AQS-看ReentrantLock的原理/</a></p>
+    <p><strong>This article is available under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a> License</strong></p>
+</blockquote>
+
+
+    </article>
+    
+    <section id="comments">
+        
+    </section>
+
+
+    
+
+</main>
+
+
+<aside style="" id="sidebar" class="aside aside-fixture">
+    <div class="toc-sidebar">
+        <nav id="toc" class="article-toc">
+            <h3 class="toc-title">文章目录</h3>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#队列同步器的作用"><span class="toc-number">1.</span> <span class="toc-text">队列同步器的作用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#状态依赖管理"><span class="toc-number">1.0.1.</span> <span class="toc-text">状态依赖管理</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#条件队列"><span class="toc-number">1.1.</span> <span class="toc-text">条件队列</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#条件谓语"><span class="toc-number">1.1.1.</span> <span class="toc-text">条件谓语</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#线程唤醒时的意外情况"><span class="toc-number">1.2.</span> <span class="toc-text">线程唤醒时的意外情况</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#过早唤醒"><span class="toc-number">1.2.1.</span> <span class="toc-text">过早唤醒</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#丢失信号"><span class="toc-number">1.2.2.</span> <span class="toc-text">丢失信号</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AbstractQueuedSynchronizer的组成"><span class="toc-number">2.</span> <span class="toc-text">AbstractQueuedSynchronizer的组成</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#独占锁和共享锁"><span class="toc-number">2.1.</span> <span class="toc-text">独占锁和共享锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#公平锁和非公平锁"><span class="toc-number">2.2.</span> <span class="toc-text">公平锁和非公平锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CAS操作"><span class="toc-number">2.3.</span> <span class="toc-text">CAS操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#线程阻塞及唤醒"><span class="toc-number">2.4.</span> <span class="toc-text">线程阻塞及唤醒</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#条件谓语-2"><span class="toc-number">2.5.</span> <span class="toc-text">条件谓语</span></a></li></ol></li></ol>
+        </nav>
+    </div>
+</aside>
+
+
+
+
+
+        </section>
+        <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
+    
+    
+</footer>
+
+        <div id="mask" class="hidden mask fixed inset-0 bg-gray-900 opacity-75 z-40"></div>
+        <div id="search-view-container" class="hidden shadow-xl"></div>
+        
+<script src="/js/dom-event.min.js"></script>
+
+
+
+<script src="/js/local-search.min.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/lightgallery.js@1.1.3/dist/js/lightgallery.min.js"></script>
+    
+<script src="/js/light-gallery.min.js"></script>
+
+
+
+
+
+
+    </body>
+</html>

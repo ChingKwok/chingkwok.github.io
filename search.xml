@@ -4,6 +4,48 @@
   
     
     <entry>
+      <title>Java中的显式锁</title>
+      <link href="/2022/07/31/Java%E4%B8%AD%E7%9A%84%E6%98%BE%E5%BC%8F%E9%94%81/"/>
+      <url>/2022/07/31/Java%E4%B8%AD%E7%9A%84%E6%98%BE%E5%BC%8F%E9%94%81/</url>
+      
+        <content type="html"><![CDATA[<h3 id="Lock">Lock</h3><p>Lock接口的实现必须提供和内置锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证和性能上可以不同。</p><h3 id="ReentrantLock">ReentrantLock</h3><p><code>ReentrantLock</code> 实现了与 <code>synchronized</code> 相同的可重入锁实现，并且在 <code>java1.6</code> 之后性能相差无几。对比 <code>synchronized</code> ，<code>ReentrantLock</code> 实现了可定时、可轮询、可中断的获取锁操作。</p><p>注意点：使用 <code>ReentrantLock</code> 必须使用 <code>try-finally</code> 在finally代码块中释放锁。</p><h3 id="公平锁-非公平锁">公平锁&amp;非公平锁</h3><p>公平锁保证了后请求锁的线程，会在之前请求锁的线程之后获取到锁，但是这会极大降低性能，因为线程的挂起和恢复需要的cpu周期很长。</p><p>非公平锁提供了 <code>插队</code> 的功能，在线程A释放锁，线程B恢复线程的时间中，线程C可以 <code>插队</code> 获取到锁、使用、释放锁，线程B获取到锁的时机没有变化或者略微推延，这样就提高了吞吐量。</p><h3 id="读-写锁">读-写锁</h3><p>可选项：</p><ul><li>释放优先：在释放读锁或者写锁时，如果在等待的线程有等待读锁也有等待写锁的，优先给读锁还是写锁。</li><li>读线程插队：在读锁被获取后，并且有线程在等待写锁，新的线程过来获取读锁能否立刻获取读锁，或者是等待写锁获取后再获取读锁，这里可能会引发饥饿问题。</li><li>重入性：读锁和写锁是否可重入</li><li>降级：获取写锁之后能否在不释放锁的情况下降级成读锁。</li><li>升级：获取读锁之后能否在不释放锁的情况下升级成写锁。大部分读写锁实现中不会支持升级，因为如果两个读锁持有的线程同时申请写锁，就会造成死锁</li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> 多线程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>AbstractQueuedSynchronizer(AQS)原理笔记</title>
+      <link href="/2022/07/02/%E4%BB%8EAbstractQueuedSynchronizer-AQS-%E7%9C%8BReentrantLock%E7%9A%84%E5%8E%9F%E7%90%86/"/>
+      <url>/2022/07/02/%E4%BB%8EAbstractQueuedSynchronizer-AQS-%E7%9C%8BReentrantLock%E7%9A%84%E5%8E%9F%E7%90%86/</url>
+      
+        <content type="html"><![CDATA[<h2 id="队列同步器的作用">队列同步器的作用</h2><p>在多线程应用中，关键在于对<strong>状态依赖的管理</strong>以及对<strong>线程状态的管理</strong>。<br>因为资源不是无限的，如I/O资源、内存资源、CPU资源等，需要对线程进行控制，获取不到资源的线程需要进行阻塞或者挂起，这就引入了队列同步器中的一个关键属性：队列，获取不到资源的线程需要阻塞，然后在队列中等待唤醒。</p><h4 id="状态依赖管理">状态依赖管理</h4><p>对于加锁有前验的条件验证，也就是状态依赖。如：一个阻塞队列，put的时候队列不能为满，get的时候队列不能为空等。在一个线程安全类中，通常不止一个需要唤醒线程情况，如果使用Synchronized进行实现，就会产生不少问题，在下面会进行讲解。</p><h3 id="条件队列">条件队列</h3><p>如果我们能够将等待不同条件的线程分开进行管理，如一个阻塞队列，在get为空的时候阻塞，则需要被put的操作唤醒，而不是get操作，这时候就引入了<strong>条件队列</strong>这一概念了，条件队列可以使得一组线程组成一条或多条队列，对特定条件进行排队等待。</p><h4 id="条件谓语">条件谓语</h4><p>条件谓语就是线程能够继续执行的前验条件，一个条件队列可能会有一个或多个条件谓语，条件谓语成真时线程继续执行，否则等待谓语成真。一个条件队列就是一组线程等待一个条件谓语组成的，多个条件队列就组成了一个完整的同步工具类，如 <code>ReentrantLock</code></p><h3 id="线程唤醒时的意外情况">线程唤醒时的意外情况</h3><h4 id="过早唤醒">过早唤醒</h4><p>由于一个条件队列中可能会有多个条件谓语，在线程被唤醒时，可能并不意味着这个线程等待的条件谓语成真，所以需要在被唤醒之后再进行一次条件谓语的验证，不为真则继续等待。</p><h4 id="丢失信号">丢失信号</h4><p>线程A通知了一个条件队列，线程B随后在这个条件队列中等待，线程B错过了通知需要等待另一个通知才能醒来。在线程等待之前没有做条件谓语为真的校验就会导致丢失信号。</p><h2 id="AbstractQueuedSynchronizer的组成">AbstractQueuedSynchronizer的组成</h2><ul><li><p>资源状态 State<br>在独占锁的场景下, 可以理解为资源占有的标识位; 在共享锁的情况下, 可以作为资源数量理解.</p></li><li><p>双向等待队列（CLH队列）<br>CLH队列全称是(Craig, Landin, andHagersten) lock queue, 用来存储被阻塞的线程信息.</p></li></ul><h3 id="独占锁和共享锁">独占锁和共享锁</h3><ul><li><p>共享锁<br>可以有多个线程同时执行, 线程执行个数也会受到state限制, 如Semaphore,CountDownLatch等等</p></li><li><p>独占锁<br>当前只有一个线程能够运行, 如ReentrantLock;</p></li></ul><h3 id="公平锁和非公平锁">公平锁和非公平锁</h3><ul><li>公平锁<br>在请求资源时，如果无法获取，严格按照队列顺序，进入等待队列。</li></ul><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ReentrantLock.java</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    acquire(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ul><li>非公平锁<br>每个线程不管是否有其他线程等待, 都会先通过CAS操作尝试抢占锁, 抢占失败再去CLH队列中等待锁资源释放</li></ul><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ReentrantLock.java</span></span><br><span class="line"> <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">            setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            acquire(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure><h3 id="CAS操作">CAS操作</h3><p>AQS在获得资源状态state, 以及添加阻塞线程到CLH队尾时都是使用CAS操作解决线程间资源抢占问题的</p><ul><li>获取资源</li></ul><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compareAndSetState(<span class="number">0</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure><ul><li>添加线程到CLH队尾, Node中封装线程及锁独占或共享标识</li></ul><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//AbstractQueuedSynchronizer.java</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">addWaiter</span><span class="params">(Node mode)</span> </span>&#123;</span><br><span class="line">    Node node = <span class="keyword">new</span> Node(Thread.currentThread(), mode);</span><br><span class="line">    <span class="comment">// Try the fast path of enq; backup to full enq on failure</span></span><br><span class="line">    Node pred = tail;</span><br><span class="line">    <span class="keyword">if</span> (pred != <span class="keyword">null</span>) &#123;</span><br><span class="line">        node.prev = pred;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetTail(pred, node)) &#123;</span><br><span class="line">            pred.next = node;</span><br><span class="line">            <span class="keyword">return</span> node;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    enq(node);</span><br><span class="line">    <span class="keyword">return</span> node;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h3 id="线程阻塞及唤醒">线程阻塞及唤醒</h3><p>在AQS中, 当线程抢占资源失败时, 会调用unsafe.park()方法阻塞线程;</p><p>当其他线程释放资源时, 也会调用unsafe.unpark()唤醒线程;</p><h3 id="条件谓语-2">条件谓语</h3><p>AQS中将条件谓语封装成 <code>Condition</code> ，一个 <code>Condition</code> 会记录线程等待头节点和尾节点，实现在唤醒时对需要的阻塞线程进行唤醒</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//AbstractQueuedSynchronizer.java</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConditionObject</span> <span class="keyword">implements</span> <span class="title">Condition</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1173984872572414699L</span>;</span><br><span class="line">        <span class="comment">/** First node of condition queue. */</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">transient</span> Node firstWaiter;</span><br><span class="line">        <span class="comment">/** Last node of condition queue. */</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">transient</span> Node lastWaiter;</span><br><span class="line">        <span class="comment">//省略其他代码</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> 多线程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>本地事务实现笔记</title>
       <link href="/2022/06/05/%E6%9C%AC%E5%9C%B0%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/"/>
       <url>/2022/06/05/%E6%9C%AC%E5%9C%B0%E4%BA%8B%E5%8A%A1%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/</url>
@@ -102,6 +144,227 @@
         <content type="html"><![CDATA[<h3 id="RESP（Redis-Serialization-Protocal）Redis序列化协议"><a href="#RESP（Redis-Serialization-Protocal）Redis序列化协议" class="headerlink" title="RESP（Redis Serialization Protocal）Redis序列化协议"></a>RESP（Redis Serialization Protocal）Redis序列化协议</h3><p>Redis在客户端与服务端的通信中，使用的是 <code>RESP</code> 协议，这个协议虽然对消息体体积没有进行优化，但是容易解析，解析性能很好</p><p><code>RESP</code> 把消息分为5种最小单元类型，单元结束时加上 <code>\r\n</code> </p><ol><li><code>+</code>  ：单行字符串</li><li><code>$</code> ：多行字符串</li><li><code>:</code> ：整数</li><li><code>-</code> ：错误信息</li><li><code>*</code> ：数组，可以嵌套其他类型单元</li></ol>]]></content>
       
       
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Java线程池源码实现笔记</title>
+      <link href="/2022/03/20/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/"/>
+      <url>/2022/03/20/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0%E7%AC%94%E8%AE%B0/</url>
+      
+        <content type="html"><![CDATA[<h1 id="线程池">线程池</h1><p><strong>Executor框架</strong></p><p>基于Executor框架，通过消费者-生产者模式，把任务的提交和执行分离。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Executor</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>在Execute框架中，线程不是执行主要的抽象，任务才是。</p><p><strong>执行策略</strong></p><ul><li>在什么线程中执行任务</li><li>任务按照什么顺序执行（FIFO、LIFO、优先级）</li><li>有多少个任务能够并发执行</li><li>在队列中有多少个任务在等待执行</li><li>系统过载需要拒绝任务时，应该选哪个任务，并如何通知应用程序有任务被拒绝</li><li>执行任务之前之后，应该做哪些动作</li></ul><p><strong>ExecutorService</strong></p><p><code>ExecutorService</code> 拓展了 <code>Executor</code> ，拓展出了生命周期，用于管理处理器的生命周期，有：运行、关闭、已终止三个状态</p><p><strong>Timer和ScheduledThreadPoolExecutor区别</strong></p><ul><li><p>Timer</p><p>基于绝对时间调度机制</p><p>单线程执行，如果执行时间超过周期，则会漏执行</p><p>执行线程抛出未检查错误时不会恢复</p></li><li><p>ScheduledThreadPoolExecutor</p><p>基于相对时间调度机制</p><p>基于线程池执行</p></li></ul><p><strong>线程饥饿死锁</strong></p><p>在线程池中，执行中线程等待工作队列线程而导致死锁</p><p><strong>线程池构造参数</strong></p><ul><li><p>int corePoolSize</p><p>基本大小，决定了线程池在空闲的时候会留存多少闲置线程</p></li><li><p>int maximumPoolSize</p><p>最大大小，决定线程池同时活动线程数量的上限</p></li><li><p>long keepAliveTime</p><p>闲置线程存活时间</p></li><li><p>TimeUnit unit</p><p>时间单位</p></li><li><p>BlockingQueue workQueue</p></li><li><p>ThreadFactory threadFactory</p></li><li><p>RejectExecutionHandler handler</p><p>饱和策略：</p><ol><li>中止</li><li>调用者运行</li><li>抛弃最旧任务</li></ol></li></ul><p><strong>扩展ThreadPoolExecutor</strong></p><p>可以对线程池进行拓展，改写 <code>beforeExecute</code> 、 <code>afterExecute</code> 、 <code>terminated</code> ，实现对线程池的日志、监控、计时等功能</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> 多线程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>LRU淘汰算法简单实现</title>
+      <link href="/2022/02/10/%E7%BC%93%E5%AD%98%E4%B8%89%E7%A7%8D%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95%E9%80%BB%E8%BE%91%E7%AC%94%E8%AE%B0/"/>
+      <url>/2022/02/10/%E7%BC%93%E5%AD%98%E4%B8%89%E7%A7%8D%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95%E9%80%BB%E8%BE%91%E7%AC%94%E8%AE%B0/</url>
+      
+        <content type="html"><![CDATA[<h3 id="LRU（least-recently-used）">LRU（least recently used）</h3><p>LRU算法根据数据的历史访问记录来进行淘汰数据，其核心思想是“如果数据最近被访问过，那么将来被访问的几率也更高”。</p><h4 id="具体过程">具体过程</h4><ol><li>新数据插入到链表头部；</li><li>每当缓存命中（即缓存数据被访问），则将数据移到链表头部；</li><li>当链表满的时候，将链表尾部的数据丢弃。</li></ol><img src="/.io//02/10/%E7%BC%93%E5%AD%98%E4%B8%89%E7%A7%8D%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95%E9%80%BB%E8%BE%91%E7%AC%94%E8%AE%B0/img1.png" class title="img1"><h4 id="数据结构">数据结构</h4><ul><li>HashMap：快速搜索的基础</li><li>双向链表：LRU顺序的基础</li></ul><h4 id="简单实现">简单实现</h4><p>根据定义手敲了一个，可能不太优雅，但是能用哈哈哈，仅供学习~</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleLRU</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> capacity;</span><br><span class="line">    <span class="keyword">private</span> Node&lt;T&gt; head;</span><br><span class="line">    <span class="keyword">private</span> Node&lt;T&gt; tail;</span><br><span class="line">    <span class="keyword">private</span> HashMap&lt;String, Node&lt;T&gt;&gt; map;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">SimpleLRU</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SimpleLRU</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.capacity = capacity;</span><br><span class="line">        map = <span class="keyword">new</span> HashMap&lt;&gt;(capacity);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">        String key;</span><br><span class="line">        T value;</span><br><span class="line">        Node&lt;T&gt; next;</span><br><span class="line">        Node&lt;T&gt; pre;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="title">Node</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="title">Node</span><span class="params">(String key, T value)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.key = key;</span><br><span class="line">            <span class="keyword">this</span>.value = value;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">(String key)</span> </span>&#123;</span><br><span class="line">        Node&lt;T&gt; node = map.get(key);</span><br><span class="line">        <span class="keyword">if</span> (node == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//头节点直接返回</span></span><br><span class="line">        <span class="keyword">if</span> (head == tail) &#123;</span><br><span class="line">            <span class="keyword">return</span> node.value;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (node != head &amp;&amp; node != tail) &#123;</span><br><span class="line">            <span class="comment">//中间节点处理</span></span><br><span class="line">            Node&lt;T&gt; p = node.pre;</span><br><span class="line">            Node&lt;T&gt; q = node.next;</span><br><span class="line">            p.next = q;</span><br><span class="line">            q.pre = p;</span><br><span class="line">            head.pre = node;</span><br><span class="line">            node.next = head;</span><br><span class="line">            head = node;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (node == tail) &#123;</span><br><span class="line">            <span class="comment">//尾节点处理</span></span><br><span class="line">            tail = node.pre;</span><br><span class="line">            tail.next = <span class="keyword">null</span>;</span><br><span class="line">            node.next = head;</span><br><span class="line">            head.pre = node;</span><br><span class="line">            node.pre = <span class="keyword">null</span>;</span><br><span class="line">            head = node;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> node.value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">put</span><span class="params">(String key, T value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (value == <span class="keyword">null</span> || key.trim().equals(<span class="string">""</span>)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Node&lt;T&gt; oldNode;</span><br><span class="line">        <span class="comment">//已有对应key，只更新value</span></span><br><span class="line">        <span class="keyword">if</span> ((oldNode = map.get(key)) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            oldNode.value = value;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Node&lt;T&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(key, value);</span><br><span class="line">        <span class="keyword">if</span> (map.size() &gt;= capacity) &#123;</span><br><span class="line">            <span class="comment">//超出队列大小，先删除再新增</span></span><br><span class="line">            Node&lt;T&gt; delNode = tail;</span><br><span class="line">            String delKey = delNode.key;</span><br><span class="line">            map.remove(delKey);</span><br><span class="line">            map.put(key, newNode);</span><br><span class="line">            <span class="keyword">if</span> (capacity == <span class="number">1</span>) &#123;</span><br><span class="line">                tail = newNode;</span><br><span class="line">                head = newNode;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//队列还有余量直接追加到map和队列中</span></span><br><span class="line">                Node&lt;T&gt; preNode = tail.pre;</span><br><span class="line">                preNode.next = newNode;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            map.put(key, newNode);</span><br><span class="line">            <span class="keyword">if</span> (head == <span class="keyword">null</span>) &#123;</span><br><span class="line">                head = newNode;</span><br><span class="line">                tail = newNode;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                tail.next = newNode;</span><br><span class="line">                newNode.pre = tail;</span><br><span class="line">                tail = newNode;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 缓存 </tag>
+            
+            <tag> 算法 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>多线程的性能和可伸缩性优化笔记</title>
+      <link href="/2022/01/20/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%92%8C%E5%8F%AF%E4%BC%B8%E7%BC%A9%E6%80%A7%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/"/>
+      <url>/2022/01/20/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%92%8C%E5%8F%AF%E4%BC%B8%E7%BC%A9%E6%80%A7%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/</url>
+      
+        <content type="html"><![CDATA[<h2 id="什么是可伸缩性？">什么是可伸缩性？</h2><p>当硬件性能提升，如cpu提升、内存提升、IO性能提升时，应用程序的处理能力是否会跟随硬件有相应的增加。</p><h3 id="如何对可伸缩性进行优化的基准">如何对可伸缩性进行优化的基准</h3><p>开发中需要针对具体需求进行定制，如何以以测试为基准进行优化。</p><h3 id="多线程的可伸缩性的限制">多线程的可伸缩性的限制</h3><p>在所有的并发程度中都会有一部分的串行化的任务，如I/O阻塞、对阻塞队列进行读取和写入等</p><h3 id="JVM对锁的优化">JVM对锁的优化</h3><ul><li>锁消除，基于逃逸分析可以把没有逃逸出栈的对象中的锁消除。</li><li>锁粗化，将相邻的相同的锁的代码块进行合并。</li></ul><h3 id="线程引入的开销">线程引入的开销</h3><ol><li><p>上下文切换</p><p>5k-10k个时钟周期，大约几微秒</p></li><li><p>内存同步</p><p>内存栅栏刷新缓存，使得缓存无效的同时也禁止了大部分的指令重排序。</p><p>共享内存总线的带宽是有限的，过多的同步会导致总线上的线程陷入瓶颈</p></li></ol><h3 id="线程阻塞的方式">线程阻塞的方式</h3><p>JVM在处理线程阻塞时，有两种阻塞策略：自旋、挂起，一般采用挂起，因为通常来说被阻塞的线程不会在短时间内获取到资源。阻塞会导致两次上下文切换和系统操作和缓存操作。</p><h2 id="优化可伸缩性">优化可伸缩性</h2><h3 id="减少锁竞争">减少锁竞争</h3><p>关键：锁的请求频率、每次持有锁的时间</p><ul><li>缩小锁的范围</li><li>减小锁的粒度<ul><li>锁分解</li><li>锁分段</li></ul></li><li>热点域缓存</li><li>替代独占锁<ul><li>读写锁 <code>ReadWriteLock</code></li><li>原子变量：乐观锁 <code>CAS</code></li></ul></li></ul><h3 id="监测CPU利用率">监测CPU利用率</h3><p>命令： top</p><p>cpu负载不高的原因：</p><ul><li>负载不充分，应用程序压力不大</li><li>IO密集</li><li>外部限制，如远程调用、Web服务调用</li><li>锁竞争</li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> jvm </tag>
+            
+            <tag> java </tag>
+            
+            <tag> 多线程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>CAP和BASE理论笔记</title>
+      <link href="/2021/10/03/CAP%E5%92%8CBASE%E7%90%86%E8%AE%BA%E7%AC%94%E8%AE%B0/"/>
+      <url>/2021/10/03/CAP%E5%92%8CBASE%E7%90%86%E8%AE%BA%E7%AC%94%E8%AE%B0/</url>
+      
+        <content type="html"><![CDATA[<h3 id="CAP">CAP</h3><ul><li>C：Consistency，强一致性，在分布式系统中的所有数据备份，在同一时刻是否同样的值。</li><li>A：Available，可用性，在集群中一部分节点故障后，集群整体是否还能响应客户端的读写请求。</li><li>P：Partition，分区容忍性，分区相当于对通信的时限要求。系统如果不能在时限内达成数据一致性，就意味着发生了分区的情况，必须就当前操作在C和A之间做出选择。</li></ul><p>CAP理论是理想状态下的，不考虑网络时延，不考虑节点中间状态，所以实践中不可能完全满足AP或CP，一般会偏向某个实现</p><h3 id="BASE">BASE</h3><ul><li>BA：Base Available，基本可用性</li><li>S：Soft State，软状态即中间状态</li><li>E：Eventual Consistent，最终一致性</li></ul><p>对比CAP理论，BASE基于工程实现，考虑了客观存在的时延、网络分区问题，因为基于分布式，所以P是必备的，所以不需要特地说明，而是加入了S状态，即不同节点间数据完成同步前的状态，然后实现E，最终一致性</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> 分布式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>线程活跃性问题笔记</title>
+      <link href="/2021/09/30/%E7%BA%BF%E7%A8%8B%E6%B4%BB%E8%B7%83%E6%80%A7%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/"/>
+      <url>/2021/09/30/%E7%BA%BF%E7%A8%8B%E6%B4%BB%E8%B7%83%E6%80%A7%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/</url>
+      
+        <content type="html"><![CDATA[<p>线程在相互等待</p><h2 id="死锁">死锁</h2><ul><li>获取锁顺序导致死锁</li></ul><p>可以通过 <code>System.identityHashCode()</code> 方法获取锁对象的hash，然后通过hash值进行判断，保证每次获取锁的顺序都是一致的，避免因获取锁顺序导致死锁</p><ul><li>开放调用</li></ul><p>在获取了锁的方法中调用一个需要获取另一个锁的方法，可能会导致死锁，可以通过降低锁的粒度，使得方法调用同步代码块不包含需要获取锁的方法调用。保证开放调用。</p><ul><li>定时锁</li></ul><p>获取锁时设置超时时间，避免无限期等待下去</p><h2 id="饥饿">饥饿</h2><p>线程无法访问需要的资源导致无法执行，叫做饥饿，如等待cpu周期、等待其他锁释放。</p><h2 id="活锁">活锁</h2><p>线程陷入活锁时不会阻塞线程，但是会一直重试，循环执行相同的操作，例如消息队列消费者处理时出错回滚，并把消息重新发送回队列中，导致活锁，这样的消息也叫 <code>毒药消息(Poison Message)</code></p><p>在重试机制中引入随机性可以避免活锁</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> 多线程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Redis过期策略和淘汰机制笔记</title>
+      <link href="/2021/09/20/Redis%E8%BF%87%E6%9C%9F%E7%AD%96%E7%95%A5%E5%92%8C%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/"/>
+      <url>/2021/09/20/Redis%E8%BF%87%E6%9C%9F%E7%AD%96%E7%95%A5%E5%92%8C%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/</url>
+      
+        <content type="html"><![CDATA[<h3 id="Redis如何过期删除过期key-value？">Redis如何过期删除过期key-value？</h3><p>惰性删除+定时删除</p><ul><li>惰性删除：只在查询一个过期的key时执行删除操作</li><li>定时删除：每隔一段时间（默认是100ms）随机抽取一些设置了过期时间的key，检查是否过期。</li></ul><h3 id="Redis如何在内存即将满的时候做淘汰数据？">Redis如何在内存即将满的时候做淘汰数据？</h3><ol><li>noeviction：内存不足时拒绝写操作</li><li>allkeys-lru：当内存不足时，在键空间中，移除最新最少使用的key</li><li>allkeys-random：当内存不足以容纳新写入数据时，在键空间中，随机移除某个key</li><li>volatile-lru：当内存不足时，在<strong>设置了过期时间的</strong>键空间中，移除最新最少使用的key</li><li>volatile-random：当内存不足以容纳新写入数据时，在<strong>设置了过期时间的</strong>键空间中，随机移除某个key</li><li>volatile-ttl：当内存不足时，在<strong>设置了过期时间的</strong>键空间中，优先移除更早过期的数据</li></ol>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Redis并发竞争问题</title>
+      <link href="/2021/09/14/Redis%E5%B9%B6%E5%8F%91%E7%AB%9E%E4%BA%89%E9%97%AE%E9%A2%98/"/>
+      <url>/2021/09/14/Redis%E5%B9%B6%E5%8F%91%E7%AB%9E%E4%BA%89%E9%97%AE%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<h3 id="什么是Redis并发竞争？">什么是Redis并发竞争？</h3><p>在一个服务集群同时对redis的某个key进行更新、删除时，可能会出现竞争，导致旧数据覆盖新数据存入Redis缓存中</p><h3 id="怎么解决">怎么解决</h3><ul><li>在写少读多的情况下：通过分布式锁，确保同一时间只有一个服务实例在操作redis的某个数据，并且通过时间戳判断数据新旧，旧数据不能覆盖新数据</li><li>在写多读多的情况下：可以通过Redis的Lua脚本实现原子操作快速根据时间戳更新或者丢弃，但是会降低Redis的吞吐量，需要进行权衡是否还需要缓存</li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>缓存击穿问题笔记</title>
+      <link href="/2021/09/04/%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/"/>
+      <url>/2021/09/04/%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/</url>
+      
+        <content type="html"><![CDATA[<h3 id="什么是缓存击穿？">什么是缓存击穿？</h3><p>热点数据过期后的短时间内，大量请求访问，在查询DB写入缓存的过程中，大量DB请求涌入，导致DB慢查询或者崩溃。</p><h3 id="如何解决？">如何解决？</h3><ul><li>分布式互斥锁，通过分布式锁对查询进行线程数限制，并设置超时时间，超时报错。</li><li>手动过期：通过key-value格式存储数据，value为过期时间，某个线程读取到数据过期后，通过异步线程进行缓存的重新构建，避免击穿</li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>缓存穿透问题笔记</title>
+      <link href="/2021/08/26/%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/"/>
+      <url>/2021/08/26/%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/</url>
+      
+        <content type="html"><![CDATA[<h3 id="什么是缓存穿透？">什么是缓存穿透？</h3><p>非正常用户大量请求缓存中不存在的数据，导致业务逻辑去数据库查找，导致数据库崩溃。</p><h3 id="缓存穿透解决方法">缓存穿透解决方法</h3><ol><li>基于数据规则进行判断非法请求。</li><li>每次在数据库查询不到就写一个空值到缓存中</li><li>布隆过滤器</li></ol><h3 id="布隆过滤器如何更新？">布隆过滤器如何更新？</h3><ol><li>尽量避免物理删除，做逻辑删除</li><li>开发定时任务，每隔几个小时，自动创建一个新的布隆过滤器数组，替换老的</li></ol>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>缓存雪崩问题笔记</title>
+      <link href="/2021/08/10/%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/"/>
+      <url>/2021/08/10/%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/</url>
+      
+        <content type="html"><![CDATA[<h3 id="什么是缓存雪崩？">什么是缓存雪崩？</h3><p>系统在高负载的情况下，缓存实例发生大面积宕机，导致大量请求无法通过缓存返回，直接请求数据库，导致数据库崩溃。</p><h3 id="缓存雪崩的解决方法？">缓存雪崩的解决方法？</h3><p>事前：使得缓存高可用</p><p>事中：使用ehcache缓存部分数据，通过hystrix做限流&amp;降级，避免mysql崩溃</p><p>本地缓存的实时性怎么保证？</p><ul><li>引入消息队列，数据更新时通过订阅消息队列进行本地缓存同步更新</li><li>设置一个比较短的过期时间，定期从DB重新拉取</li></ul><p>事后：redis持久化，快速恢复缓存数据</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> redis </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>缓存与数据库双写数据一致性问题</title>
+      <link href="/2021/08/03/%E7%BC%93%E5%AD%98%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8F%8C%E5%86%99%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/"/>
+      <url>/2021/08/03/%E7%BC%93%E5%AD%98%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E5%8F%8C%E5%86%99%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<h1 id="缓存与数据库双写数据一致性问题">缓存与数据库双写数据一致性问题</h1><p>本质上来说，双写一致性问题是因为更新数据库和更新缓存不是原子操作，如果要做到强一致性，只能加分布式锁。不然就是做取舍问题。</p><p>缓存是用在：不经常变动，但是又经常查询，而且发生脏读不敏感的场景下使用</p><p>缓存+数据库读写模式：</p><ol><li>cache aside pattern<ol><li>读的时候，先读缓存，缓存没有的话就读数据库，读到的数据库的值再存入缓存。</li><li>数据更新的时候，更新数据库，删除缓存。</li></ol></li><li>Read-Through/Write-Through（读写穿透）<ol><li>读写通过Cache Provider封装的api，Cache Provider进行缓存的读取和数据库的读取&amp;更新缓存，写的时候也是通过Provider进行。</li></ol></li><li>Write-behind（异步缓存写入）<ol><li>通过Cache Provider进行读写访问，Cache Provider在缓存层进行更新，不同步更新数据库，而是通过间隔一段时间批量异步更新数据库，如linux的os cache实现，写入之后定时进行fsync才会真正刷入磁盘</li></ol></li></ol><p><strong>如何解决双写数据一致性问题</strong><br>0. 读的时候，先读缓存，缓存没有的话就读数据库，读到的数据库的值再存入缓存，这种模式有极低的概率会导致不一致，可以给缓存设置一个过期时间，避免极少数key一直不一致</p><ol><li>强一致性情况下使用分布式事务对读写进行控制，但会降低并发量，没有什么意义。</li><li>弱一致性情况下使用延迟双删，更新数据库之前删除缓存，更新之后再延迟删除缓存，延迟的时间可以是读业务逻辑的耗时+几百毫秒</li><li>高并发读写的情况下，在一个修改请求删除了缓存之后，准备进行数据库更新，这时候有一个读请求进来，发现缓存为空，然后去数据库获取到旧值，保存到缓存中，然后修改请求修改数据库完成，这时候出现不一致问题<br>这时候可以考虑把缓存更新和读取操作进行异步串行化，将读写请求根据唯一标识进行路由，发送到一个内部队列中，</li><li>删除缓存重试机制</li><li>读取biglog异步删除缓存</li><li>写-延迟删缓存</li><li>消息队列异步更新缓存，注意带上时间戳避免并发写时顺序与写DB不一致</li></ol><p>整体来说还是需要结合实际项目，一致性和并发不能兼顾，具体情况具体分析了，如果是需要强一致性，其实缓存也就没有意义了，直接读库就行了…</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> mysql </tag>
+            
+            <tag> redis </tag>
+            
+        </tags>
       
     </entry>
     

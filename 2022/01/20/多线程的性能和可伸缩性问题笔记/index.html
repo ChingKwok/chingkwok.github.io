@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html  lang="zh-CN" >
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <title>多线程的性能和可伸缩性优化笔记 | ChingKwok的书斋</title>
+    <meta name="description" content="什么是可伸缩性？ 当硬件性能提升，如cpu提升、内存提升、IO性能提升时，应用程序的处理能力是否会跟随硬件有相应的增加。 如何对可伸缩性进行优化的基准 开发中需要针对具体需求进行定制，如何以以测试为基准进行优化。 多线程的可伸缩性的限制 在所有的并发程度中都会有一部分的串行化的任务，如I&#x2F;O阻塞、对阻塞队列进行读取和写入等 JVM对锁的优化  锁消除，基于逃逸分析可以把没有逃逸出栈的对象中的锁消除">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多线程的性能和可伸缩性优化笔记">
+<meta property="og:url" content="https://chingkwok.github.io/2022/01/20/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%92%8C%E5%8F%AF%E4%BC%B8%E7%BC%A9%E6%80%A7%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="ChingKwok的书斋">
+<meta property="og:description" content="什么是可伸缩性？ 当硬件性能提升，如cpu提升、内存提升、IO性能提升时，应用程序的处理能力是否会跟随硬件有相应的增加。 如何对可伸缩性进行优化的基准 开发中需要针对具体需求进行定制，如何以以测试为基准进行优化。 多线程的可伸缩性的限制 在所有的并发程度中都会有一部分的串行化的任务，如I&#x2F;O阻塞、对阻塞队列进行读取和写入等 JVM对锁的优化  锁消除，基于逃逸分析可以把没有逃逸出栈的对象中的锁消除">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-20T07:16:32.000Z">
+<meta property="article:modified_time" content="2022-01-20T07:16:32.000Z">
+<meta property="article:author" content="ChingKwok">
+<meta property="article:tag" content="jvm">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+
+    
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+    
+<link rel="stylesheet" href="/css/common.min.css">
+
+
+
+    
+    
+    
+    
+        <link href="//cdn.jsdelivr.net/npm/lightgallery.js@1.1.3/dist/css/lightgallery.min.css" rel="stylesheet">
+    
+    
+    
+<link rel="stylesheet" href="/css/iconfont.min.css">
+
+    
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+    <body>
+        <header class="header header-fixture">
+    <div class="profile-search-wrap flex sm:block">
+        
+        
+        <div class="profile sm:text-center md:px-1 lg:px-3 sm:pb-4 sm:pt-6">
+            <a id="avatar" role="link" href="https://github.com/fengkx" class="inline-block lg:w-16 lg:h-16 w-8 h-8 m-2" target="_blank" rel="noopener" rel="noreferrer" >
+                <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
+            </a>
+            <h2 id="name" class="hidden lg:block">GuoChing</h2>
+            <h3 id="title" class="hidden lg:block">在广州的一位3年萌新Web开发</h3>
+            
+            <small id="location" class="hidden lg:block">
+                <i class="iconfont icon-map-icon"></i>
+                广州
+            </small>
+            
+        </div>
+        
+        
+<div class="search flex-1 flex lg:inline-block sm:hidden lg:px-4 lg:mt-2 lg:mb-4 lg:w-full">
+    <form id="search-form" class="my-auto flex-1 lg:border lg:border-solid lg:border-gray-200">
+        <div class="input-group table bg-gray-100 lg:bg-white w-full">
+            <input id="search-input" type="text" placeholder="搜索" class="inline-block w-full bg-gray-100 lg:bg-white p-1">
+            <span class="table-cell">
+                <button name="search tigger button" disabled>
+                    <i class="iconfont icon-search m-2"></i>
+                </button>
+            </span>
+        </div>
+    </form>
+        
+<div id="content-json" data-placeholder="搜索" class="invisible hidden">/content.json</div>
+<script id="search-teamplate" type="text/html" data-path="/content.json">
+    <div>
+        <div class="search-header bg-gray-400">
+            <input id="actual-search-input" model="keyword" ref="input" class="inline-block w-full h-10 px-2 py-1" placeholder="搜索" type="text">
+        </div>
+        <div class="search-result bg-gray-200">
+            {{#each searchPosts}}
+            <a href="/{{ path }}" class="result-item block px-2 pb-3 mb-1 pt-1 hover:bg-indigo-100">
+                <i class="iconfont icon-file"></i>
+                <h1 class="result-title inline font-medium text-lg">{{ title }}</h1>
+                <p class="result-content text-gray-600 text-sm">{{{ text }}}</p>
+            </a>
+            {{/each}}
+        </div>
+    </div>
+</script>
+
+</div>
+
+
+        <button name="menu toogle button" id="menu-toggle-btn" class="block sm:hidden p-3" role="button" aria-expanded="false">
+            <i class="iconfont icon-hamburger"></i>
+        </button>
+    </div>
+    <nav id="menu-nav" class="hidden sm:flex flex-col">
+        
+        
+            <div class="menu-item menu-home" role="menuitem">
+                <a href="/.">
+                    <i class="iconfont icon-home" aria-hidden="true"></i>
+                    <span class="menu-title">首页</span>
+                </a>
+            </div>
+        
+        
+            <div class="menu-item menu-about" role="menuitem">
+                <a href="/about">
+                    <i class="iconfont icon-cup" aria-hidden="true"></i>
+                    <span class="menu-title">关于</span>
+                </a>
+            </div>
+        
+        
+
+    </nav>
+</header>
+
+        <section class="main-section">
+            
+    <main class="flex-1 px-4 py-14 md:px-5 lg:px-8 lg:py-4 relative min-h-screen">
+    
+
+    <article class="content article article-archives article-type-list" itemscope="">
+        <header class="article-header">
+            
+    
+        <h1 class="article-title text-lg" itemprop="name">
+            多线程的性能和可伸缩性优化笔记
+        </h1>
+    
+
+
+
+            <p class="article-meta mb-3 text-xs">
+                <span class="article-date">
+    <i class="iconfont icon-calendar-check"></i>
+	<a href="/2022/01/20/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%92%8C%E5%8F%AF%E4%BC%B8%E7%BC%A9%E6%80%A7%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/" class="article-date">
+	  <time datetime="2022-01-20T07:16:32.000Z" itemprop="datePublished">1月 20</time>
+	</a>
+</span>
+
+                
+
+                
+    <span class="article-tags">
+    <i class="iconfont icon-tag"></i>
+    <a class="article-tag-link" href="/tags/java/" rel="tag">java</a>, <a class="article-tag-link" href="/tags/jvm/" rel="tag">jvm</a>, <a class="article-tag-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a>
+  </span>
+
+
+                <span class="_partial/post-comment"><i class="icon icon-comment"></i>
+                    <a href="/2022/01/20/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%92%8C%E5%8F%AF%E4%BC%B8%E7%BC%A9%E6%80%A7%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/#comments" class="article-comment-link">
+                        评论
+                    </a>
+                </span>
+                
+
+            </p>
+        </header>
+        <div class="marked-body article-body">
+            <h2 id="什么是可伸缩性？">什么是可伸缩性？</h2>
+<p>当硬件性能提升，如cpu提升、内存提升、IO性能提升时，应用程序的处理能力是否会跟随硬件有相应的增加。</p>
+<h3 id="如何对可伸缩性进行优化的基准">如何对可伸缩性进行优化的基准</h3>
+<p>开发中需要针对具体需求进行定制，如何以以测试为基准进行优化。</p>
+<h3 id="多线程的可伸缩性的限制">多线程的可伸缩性的限制</h3>
+<p>在所有的并发程度中都会有一部分的串行化的任务，如I/O阻塞、对阻塞队列进行读取和写入等</p>
+<h3 id="JVM对锁的优化">JVM对锁的优化</h3>
+<ul>
+<li>锁消除，基于逃逸分析可以把没有逃逸出栈的对象中的锁消除。</li>
+<li>锁粗化，将相邻的相同的锁的代码块进行合并。</li>
+</ul>
+<h3 id="线程引入的开销">线程引入的开销</h3>
+<ol>
+<li>
+<p>上下文切换</p>
+<p>5k-10k个时钟周期，大约几微秒</p>
+</li>
+<li>
+<p>内存同步</p>
+<p>内存栅栏刷新缓存，使得缓存无效的同时也禁止了大部分的指令重排序。</p>
+<p>共享内存总线的带宽是有限的，过多的同步会导致总线上的线程陷入瓶颈</p>
+</li>
+</ol>
+<h3 id="线程阻塞的方式">线程阻塞的方式</h3>
+<p>JVM在处理线程阻塞时，有两种阻塞策略：自旋、挂起，一般采用挂起，因为通常来说被阻塞的线程不会在短时间内获取到资源。阻塞会导致两次上下文切换和系统操作和缓存操作。</p>
+<h2 id="优化可伸缩性">优化可伸缩性</h2>
+<h3 id="减少锁竞争">减少锁竞争</h3>
+<p>关键：锁的请求频率、每次持有锁的时间</p>
+<ul>
+<li>缩小锁的范围</li>
+<li>减小锁的粒度
+<ul>
+<li>锁分解</li>
+<li>锁分段</li>
+</ul>
+</li>
+<li>热点域缓存</li>
+<li>替代独占锁
+<ul>
+<li>读写锁 <code>ReadWriteLock</code></li>
+<li>原子变量：乐观锁 <code>CAS</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="监测CPU利用率">监测CPU利用率</h3>
+<p>命令： top</p>
+<p>cpu负载不高的原因：</p>
+<ul>
+<li>负载不充分，应用程序压力不大</li>
+<li>IO密集</li>
+<li>外部限制，如远程调用、Web服务调用</li>
+<li>锁竞争</li>
+</ul>
+
+        </div>
+        
+<blockquote class="copyright">
+    <p><strong>本文链接 : </strong><a class="permalink" href="https://chingkwok.github.io/2022/01/20/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%92%8C%E5%8F%AF%E4%BC%B8%E7%BC%A9%E6%80%A7%E9%97%AE%E9%A2%98%E7%AC%94%E8%AE%B0/">https://chingkwok.github.io/2022/01/20/多线程的性能和可伸缩性问题笔记/</a></p>
+    <p><strong>This article is available under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a> License</strong></p>
+</blockquote>
+
+
+    </article>
+    
+    <section id="comments">
+        
+    </section>
+
+
+    
+
+</main>
+
+
+<aside style="" id="sidebar" class="aside aside-fixture">
+    <div class="toc-sidebar">
+        <nav id="toc" class="article-toc">
+            <h3 class="toc-title">文章目录</h3>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是可伸缩性？"><span class="toc-number">1.</span> <span class="toc-text">什么是可伸缩性？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何对可伸缩性进行优化的基准"><span class="toc-number">1.1.</span> <span class="toc-text">如何对可伸缩性进行优化的基准</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多线程的可伸缩性的限制"><span class="toc-number">1.2.</span> <span class="toc-text">多线程的可伸缩性的限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JVM对锁的优化"><span class="toc-number">1.3.</span> <span class="toc-text">JVM对锁的优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#线程引入的开销"><span class="toc-number">1.4.</span> <span class="toc-text">线程引入的开销</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#线程阻塞的方式"><span class="toc-number">1.5.</span> <span class="toc-text">线程阻塞的方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优化可伸缩性"><span class="toc-number">2.</span> <span class="toc-text">优化可伸缩性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#减少锁竞争"><span class="toc-number">2.1.</span> <span class="toc-text">减少锁竞争</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#监测CPU利用率"><span class="toc-number">2.2.</span> <span class="toc-text">监测CPU利用率</span></a></li></ol></li></ol>
+        </nav>
+    </div>
+</aside>
+
+
+
+
+
+        </section>
+        <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
+    
+    
+</footer>
+
+        <div id="mask" class="hidden mask fixed inset-0 bg-gray-900 opacity-75 z-40"></div>
+        <div id="search-view-container" class="hidden shadow-xl"></div>
+        
+<script src="/js/dom-event.min.js"></script>
+
+
+
+<script src="/js/local-search.min.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/lightgallery.js@1.1.3/dist/js/lightgallery.min.js"></script>
+    
+<script src="/js/light-gallery.min.js"></script>
+
+
+
+
+
+
+    </body>
+</html>
