@@ -1,174 +1,202 @@
 <!DOCTYPE html>
-<html  lang="zh-CN" >
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, maximum-scale=5, viewport-fit=cover">
-    <title>Redis数据结构源码学习笔记 | ChingKwok的书斋</title>
-    <meta name="description" content="【2022.5.28】Redis源码字符串源码字符串由两个部分组成，一个是redis对象通用结构体 RedisObject ，一个是字符串特有的 SDS(Simple Dynamic String) 简单动态字符串结构体 123456789&#x2F;&#x2F;RedisObject 16Bytesstruct RedisObject&amp;#123;	int4 type; &#x2F;&#x2F;对象类型，如字符串 4bits	int4">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Redis数据结构源码学习笔记">
-<meta property="og:url" content="https://chingkwok.github.io/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
-<meta property="og:site_name" content="ChingKwok的书斋">
-<meta property="og:description" content="【2022.5.28】Redis源码字符串源码字符串由两个部分组成，一个是redis对象通用结构体 RedisObject ，一个是字符串特有的 SDS(Simple Dynamic String) 简单动态字符串结构体 123456789&#x2F;&#x2F;RedisObject 16Bytesstruct RedisObject&amp;#123;	int4 type; &#x2F;&#x2F;对象类型，如字符串 4bits	int4">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://chingkwok.github.io/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/img1.png">
-<meta property="article:published_time" content="2022-05-01T12:10:34.000Z">
-<meta property="article:modified_time" content="2022-05-01T12:10:34.000Z">
-<meta property="article:author" content="ChingKwok">
-<meta property="article:tag" content="redis">
-<meta property="article:tag" content="源码">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://chingkwok.github.io/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/img1.png">
+<html lang="en" dir="ltr">
 
-    
-    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <!-- semantic UI 样式资源 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+<link rel="stylesheet" href="/css/Mycss.css">
 
-    
-<link rel="stylesheet" href="/css/common.min.css">
+  
+<link rel="stylesheet" href="/css/content.css">
+
+  
+<link rel="stylesheet" href="/lib/enlighterjs.min.css">
+
+  
+<link rel="stylesheet" href="/css/gototop.css">
+
+  
+<link rel="stylesheet" href="/css/search.css">
+
+  
+<link rel="stylesheet" href="/css/mobile.css">
+
+  
+<link rel="stylesheet" href="/css/countdowntimer.css">
 
 
 
-    
-    
-    
-    
-        <link href="//cdn.jsdelivr.net/npm/lightgallery.js@1.1.3/dist/css/lightgallery.min.css" rel="stylesheet">
-    
-    
-    
-<link rel="stylesheet" href="/css/iconfont.min.css">
+  <!--Title-->
 
+<title>
     
+    Redis数据结构源码学习笔记 |
+    
+    ChingKwok的书斋
+</title>
+
+<link rel="alternate" href="/atom.xml" title="ChingKwok的书斋" type="application/atom+xml">
+
+
+<link rel="icon" href="/img/avatar.jpg">
+
+
+
+  
 <meta name="generator" content="Hexo 4.2.1"></head>
 
-    <body>
-        <header class="header header-fixture">
-    <div class="profile-search-wrap flex sm:block">
-        
-        
-        <div class="profile sm:text-center md:px-1 lg:px-3 sm:pb-4 sm:pt-6">
-            <a id="avatar" role="link" href="https://github.com/fengkx" class="inline-block lg:w-16 lg:h-16 w-8 h-8 m-2" target="_blank" rel="noopener" rel="noreferrer" >
-                <img src="https://www.gravatar.com/avatar/0bc83cb571cd1c50ba6f3e8a78ef1346?s=128" class="rounded-full" alt="avatar">
-            </a>
-            <h2 id="name" class="hidden lg:block">GuoChing</h2>
-            <h3 id="title" class="hidden lg:block">在广州的一位3年萌新Web开发</h3>
-            
-            <small id="location" class="hidden lg:block">
-                <i class="iconfont icon-map-icon"></i>
-                广州
-            </small>
-            
+
+<body>
+  <!-- header -->
+<header class="ui segment attached background-deep-green border-none">
+  <div class="ui container header-container grid  stackable">
+    <div class="left floated six wide column">
+      <h1 class="ui header font-thin-yellow">
+        <div class="content">
+          <a href="/" class="title-href">一马平川</a>
+          <div class="ui divider title-divider"></div>
+          <div class="sub header font-thin-yellow">不积跬步无以至千里，后继才能薄发</div>
         </div>
-        
-        
-<div class="search flex-1 flex lg:inline-block sm:hidden lg:px-4 lg:mt-2 lg:mb-4 lg:w-full">
-    <form id="search-form" class="my-auto flex-1 lg:border lg:border-solid lg:border-gray-200">
-        <div class="input-group table bg-gray-100 lg:bg-white w-full">
-            <input id="search-input" type="text" placeholder="搜索" class="inline-block w-full bg-gray-100 lg:bg-white p-1">
-            <span class="table-cell">
-                <button name="search tigger button" disabled>
-                    <i class="iconfont icon-search m-2"></i>
-                </button>
-            </span>
-        </div>
-    </form>
-        
-<div id="content-json" data-placeholder="搜索" class="invisible hidden">/content.json</div>
-<script id="search-teamplate" type="text/html" data-path="/content.json">
-    <div>
-        <div class="search-header bg-gray-400">
-            <input id="actual-search-input" model="keyword" ref="input" class="inline-block w-full h-10 px-2 py-1" placeholder="搜索" type="text">
-        </div>
-        <div class="search-result bg-gray-200">
-            {{#each searchPosts}}
-            <a href="/{{ path }}" class="result-item block px-2 pb-3 mb-1 pt-1 hover:bg-indigo-100">
-                <i class="iconfont icon-file"></i>
-                <h1 class="result-title inline font-medium text-lg">{{ title }}</h1>
-                <p class="result-content text-gray-600 text-sm">{{{ text }}}</p>
-            </a>
-            {{/each}}
-        </div>
+      </h1>
     </div>
-</script>
+    <div class="right floated six wide column">
+      <div class="ui content floated right">
+        <div class="content ">
+          <div class="sub header font-thin-yellow row-flex-right">
+            <a href="#" class="ui label margin-left-5 wechat-link">
+              <img class="margin-2" src="/img/wechat.png">
+            </a>
+            <div class="ui special popup">
+              <img src="/img/mywechat.jpg" alt="加我微信">
+            </div>
 
-</div>
+            <a href="#" class="ui label margin-left-5 public-link">
+              <img class="margin-2" src="/img/public.png">
+            </a>
+            <div class="ui special popup">
+              <img src="/img/csdn.png" alt="加我微信">
+            </div>
+
+            <a href="" class="ui label margin-left-5 zhihu-link">
+              <img class="margin-2" src="/img/zhihu.png">
+            </a>
+
+            <a href="" class="ui label margin-left-5 jianshu-link">
+              <img class="margin-2" src="/img/jianshu.png">
+            </a>
+
+            <a href="" class="ui label margin-left-5 github-link">
+              <img class="margin-2" src="/img/github.png">
+            </a>
 
 
-        <button name="menu toogle button" id="menu-toggle-btn" class="block sm:hidden p-3" role="button" aria-expanded="false">
-            <i class="iconfont icon-hamburger"></i>
-        </button>
+            <a href="" class="ui label margin-left-5 weibo-link">
+              <img class="margin-2" src="/img/weibo.png">
+            </a>
+
+
+            <a href="" class="ui label margin-left-5 rss-link">
+              <img class="margin-2" src="/img/rss.png">
+            </a>
+
+          </div>
+          <div class="ui divider title-divider"></div>
+          <div class="sub header font-thin-yellow row-flex-right">
+            <a href="/2021/06/28/推荐一款好用的文本编辑器Typora0/" class="ui label margin-left-5">
+              友情链接
+            </a>
+            <a class="ui label margin-left-5">
+              关于作者
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-    <nav id="menu-nav" class="hidden sm:flex flex-col">
-        
-        
-            <div class="menu-item menu-home" role="menuitem">
-                <a href="/.">
-                    <i class="iconfont icon-home" aria-hidden="true"></i>
-                    <span class="menu-title">首页</span>
-                </a>
-            </div>
-        
-        
-            <div class="menu-item menu-about" role="menuitem">
-                <a href="/about">
-                    <i class="iconfont icon-cup" aria-hidden="true"></i>
-                    <span class="menu-title">关于</span>
-                </a>
-            </div>
-        
-        
 
-    </nav>
+  </div>
 </header>
 
-        <section class="main-section">
-            
-    <main class="flex-1 px-4 py-14 md:px-5 lg:px-8 lg:py-4 relative min-h-screen">
-    
+  <!-- 菜单导航栏 -->
+<div class="ui segment attached background-thin-yellow padding-less">
+  <div class="ui container">
+    <div class="ui menu border-background-less borderless stackable mobile-hide">
+      <a href="#" class="ui icon button background-thin-yellow menu-button">
+        <div class="page-title">
+          一马平川
+        </div>
+        <i class="black sidebar icon top-left"></i>
+      </a>
+      <a href="/" class="item moblie-hide" data-path="/">首页</a>
+      <a href="/archive" class="item moblie-hide" data-path="/archive/">文章列表</a>
+      <a href="/categories" class="item moblie-hide" data-path="/categories/">分类列表</a>
+      <a href="/tags" class="item moblie-hide" data-path="/tags/">标签列表</a>
+      <a href="/friendcircle" class="item moblie-hide" data-path="/friendcircle/">友链资讯</a>
+      <a href="/shuoshuo" class="item moblie-hide">个人随想录</a>
+      <a href="https://nothinglin.gitbook.io/kao-yan-bi-ji/" target="_blank" rel="noopener" class="item moblie-hide">知识库</a>
+      <a href="http://nothinglin-space.my-free.workers.dev/0:/" target="_blank" rel="noopener" class="item moblie-hide">资料库</a>
+      <a href="/comments" class="item moblie-hide">留言</a>
+      <a href="" class="ui item right moblie-hide" id="nav-search"><i class="icon search"></i></a>
+    </div>
+  </div>
+  <!-- 搜索框的弹出内容 -->
+  <div class="ui modal">
+    <!-- 上半部分 -->
+    <div class="header search-title-background search-title-center">
+      <h3>搜索</h3>
+    </div>
+    <!-- 中部 -->
+    <div class="image local-search col-flex">
+      <div class="ui segment background-thin-yellow">
+        <div class="ui action input row-flex">
+          <input type="text" placeholder="搜索..." id="local-search-input">
+          <button class="ui button" id="local-search-close">清空</button>
+        </div>
+        <div id="local-search-result" class="search-result overflow-y local-search col-flex"></div>
+      </div>
+    </div>
+    <div class="actions background-thin-yellow">
+      点击旁边阴影部分可以退出搜索
+    </div>
+  </div>
+</div>
 
-    <article class="content article article-archives article-type-list" itemscope="">
-        <header class="article-header">
-            
-    
-        <h1 class="article-title text-lg" itemprop="name">
-            Redis数据结构源码学习笔记
-        </h1>
-    
-
-
-
-            <p class="article-meta mb-3 text-xs">
-                <span class="article-date">
-    <i class="iconfont icon-calendar-check"></i>
-	<a href="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="article-date">
-	  <time datetime="2022-05-01T12:10:34.000Z" itemprop="datePublished">5月 1</time>
-	</a>
-</span>
-
-                
-
-                
-    <span class="article-tags">
-    <i class="iconfont icon-tag"></i>
-    <a class="article-tag-link" href="/tags/redis/" rel="tag">redis</a>, <a class="article-tag-link" href="/tags/%E6%BA%90%E7%A0%81/" rel="tag">源码</a>
-  </span>
-
-
-                <span class="_partial/post-comment"><i class="icon icon-comment"></i>
-                    <a href="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#comments" class="article-comment-link">
-                        评论
-                    </a>
-                </span>
-                
-
-            </p>
-        </header>
-        <div class="marked-body article-body">
-            <h1 id="【2022-5-28】Redis源码"><a href="#【2022-5-28】Redis源码" class="headerlink" title="【2022.5.28】Redis源码"></a>【2022.5.28】Redis源码</h1><h2 id="字符串源码"><a href="#字符串源码" class="headerlink" title="字符串源码"></a>字符串源码</h2><p>字符串由两个部分组成，一个是redis对象通用结构体 <code>RedisObject</code> ，一个是字符串特有的 <code>SDS(Simple Dynamic String)</code> 简单动态字符串结构体</p>
+  <!-- 文章主体布局 -->
+  <div class="ui container margin-top-30">
+    <div class="ui grid stackable">
+      <!-- 文章列表 -->
+<div class="eleven wide column">
+  <div class="ui segment background-thin-yellow content">
+    <div class="ui segment background-thin-yellow border-background-less">
+      <div class="ui segment background-thin-yellow border-background-less">
+        <h2 class="ui center aligned icon header">Redis数据结构源码学习笔记</h2>
+        <div class="ui segment background-thin-yellow border-background-less">
+          <!-- 文章info -->
+          <div class="row-flex-center">
+            <h5 class="header margin-left-right-10"><i class="address user icon"></i></h5>
+            <h5 class="header margin-left-right-10"><i class="address calendar alternate outline icon"></i>2022年05月01日</h5>
+            <h5 class="header margin-left-right-10"><i class="address eye icon"></i><span id="twikoo_visitors">0</span></h5>
+            <h5 class="header margin-left-right-10"><i class="address folder open outline icon"></i>
+              
+              未分类
+              </h5>
+            <h5 class="header margin-left-right-10"><i class="address tag icon"></i>
+              
+              <a class="tag-link" href="/tags/redis/" rel="tag">redis</a> ， <a class="tag-link" href="/tags/%E6%BA%90%E7%A0%81/" rel="tag">源码</a>
+              </h5>
+          </div>
+        </div>
+        <!-- 分割线 -->
+        <div class="ui divider title-divider"></div>
+      </div>
+      <div class="ui segment background-thin-yellow content border-background-less top-15"> <h1 id="【2022-5-28】Redis源码">【2022.5.28】Redis源码</h1>
+<h2 id="字符串源码">字符串源码</h2>
+<p>字符串由两个部分组成，一个是redis对象通用结构体 <code>RedisObject</code> ，一个是字符串特有的 <code>SDS(Simple Dynamic String)</code> 简单动态字符串结构体</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//RedisObject 16Bytes</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RedisObject</span>&#123;</span></span><br><span class="line">	int4 type; <span class="comment">//对象类型，如字符串 4bits</span></span><br><span class="line">	int4 encoding;  <span class="comment">//编码类型  4bits</span></span><br><span class="line">	int24 lru;   <span class="comment">//LRU信息，用于淘汰key 24bits</span></span><br><span class="line">	int32 refcount;   <span class="comment">//引用计数器 4Bytes</span></span><br><span class="line">  <span class="keyword">void</span> *ptr;    <span class="comment">//指向实际存储位置的指针，也就是指向SDS的指针 根据系统位数不同64位系统是 8Bytes</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SDS &gt;=3Bytes</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SDS</span>&lt;T&gt;&#123;</span></span><br><span class="line">	T capacity;  <span class="comment">//分配的数组的长度，content的长度</span></span><br><span class="line">	T len;  <span class="comment">//实际存储的字符串的长度</span></span><br><span class="line">	<span class="keyword">byte</span> flags;  <span class="comment">//标志位</span></span><br><span class="line">	<span class="keyword">byte</span>[] contents; <span class="comment">//内容数组</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>字符串的编码分为两种： <code>embstr</code> 和 <code>raw</code></p>
 <p>embstr</p>
 <p>使用 <code>malloc</code> 方法申请空间， <code>jemalloc</code> 分配空间大小是2/4/8/16/32/64字节，因为embstr最小需要19Bytes，所以给 <code>embstr</code> 最小分配32字节空间，稍微长一些就是64字节空间，Redis的逻辑是当embstr空间大于64字节时，转为 <code>raw</code> 存储</p>
@@ -176,13 +204,13 @@
 <p>embstr编码下，字符串的最大字符数是：64-19-1=44Bytes</p>
 <p>raw</p>
 <p>与embstr不同，embstr是调用一次malloc函数申请空间，raw是调用两次malloc函数，申请两块不连续的空间，使用 <code>RedisObject</code> 中的 <code>*ptr</code> 指针进行指向SDS，在字符串大于44Bytes时会使用raw格式存储</p>
-<h3 id="扩容策略"><a href="#扩容策略" class="headerlink" title="扩容策略"></a>扩容策略</h3><p>当字符串小于1MB时，扩容contents数组时加倍扩容，而大于1MB时，每次扩容多分配1MB空间</p>
-<h2 id="字典结构"><a href="#字典结构" class="headerlink" title="字典结构"></a>字典结构</h2><p>字典结构应用到的地方由很多，比如redis作为远程字典服务器本身就是一个由key和value大字典，而在zset集合中score和value值也是一个字典，以及key的过期时间存储也是由字典实现。</p>
+<h3 id="扩容策略">扩容策略</h3>
+<p>当字符串小于1MB时，扩容contents数组时加倍扩容，而大于1MB时，每次扩容多分配1MB空间</p>
+<h2 id="字典结构">字典结构</h2>
+<p>字典结构应用到的地方由很多，比如redis作为远程字典服务器本身就是一个由key和value大字典，而在zset集合中score和value值也是一个字典，以及key的过期时间存储也是由字典实现。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//redisDB </span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RedisDb</span>&#123;</span></span><br><span class="line">	dict* dict;  <span class="comment">//所有的key key-&gt;value</span></span><br><span class="line">	dict* expires; <span class="comment">//所有的key的过期时间  key-&gt;long(timestamp)</span></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//zset</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">zset</span> &#123;</span></span><br><span class="line">	dict *dict;  <span class="comment">//所有value value-&gt;score</span></span><br><span class="line">	zskiplist *zsl;  <span class="comment">//跳表</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>字典结构中主要是有两个hashtable</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//dict</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line">	...</span><br><span class="line">	dictht ht[<span class="number">2</span>];  <span class="comment">//两个hashtable，用于在扩容时作为渐进式搬运的临时ht</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//dictht</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></span><br><span class="line">	dictEntry** table;   <span class="comment">//指向数组的指针</span></span><br><span class="line">	<span class="keyword">long</span> <span class="built_in">size</span>;  <span class="comment">//第一维数组的长度</span></span><br><span class="line">  <span class="keyword">long</span> used;  <span class="comment">//hash表中的元素个数</span></span><br><span class="line">  ...  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//dictEntry</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></span><br><span class="line">	<span class="keyword">void</span>* key;</span><br><span class="line">	<span class="keyword">void</span>* val;</span><br><span class="line">	dictEntry* next;  <span class="comment">//指向下一个entry的指针</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>hash中的关键逻辑</p>
 <ul>
 <li>渐进式rehash：因为rehash是一个 <code>O(n)</code> 时间复杂度的操作，redis在rehash中维护两个hashtable，一个旧一个新，新增的entry会新增到新hash中，并且旧hash会逐渐在hset、hdel逻辑中主动搬运，如果没有这些操作，也会在定时任务中进行搬运。</li>
@@ -190,15 +218,14 @@
 <li>扩容逻辑：hash元素总数等于数组长度时开始扩容，尽量保证查找效率为 <code>O(1)</code> ，扩容为原数组大小的两倍，但如果在 <code>bgsave</code> 过程中，则会推延扩容直到元素总数达到数组长度的5倍，就会触发强制扩容</li>
 <li>缩容逻辑：hash元素总数小于数组长度的10%时，触发缩容，缩容不会考虑 <code>bgsave</code></li>
 </ul>
-<h2 id="压缩列表（ziplist）"><a href="#压缩列表（ziplist）" class="headerlink" title="压缩列表（ziplist）"></a>压缩列表（ziplist）</h2><p>有序集合 <code>zset</code> 在元素较少 <code>（&lt;128）&amp;（len&lt;64）</code> 时，会使用 <code>ziplist</code> ，这个数据结构没有空隙，所有元素都是紧挨着存放。</p>
+<h2 id="压缩列表（ziplist）">压缩列表（ziplist）</h2>
+<p>有序集合 <code>zset</code> 在元素较少 <code>（&lt;128）&amp;（len&lt;64）</code> 时，会使用 <code>ziplist</code> ，这个数据结构没有空隙，所有元素都是紧挨着存放。</p>
 <p>查找时间复杂度： <code>O(n)</code></p>
 <p>插入时间复杂度： <code>O(n)</code></p>
 <p>压缩链表结构</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ziplist</span> &#123;</span></span><br><span class="line">	int32 zlbytes; <span class="comment">//整个列表占用的字节数</span></span><br><span class="line">	int32 zltail_offset;  <span class="comment">//最后一个元素距离压缩列表起始位置的偏移量，用于定位最后一个节点</span></span><br><span class="line">	int16 zllength;  <span class="comment">//元素个数</span></span><br><span class="line">  T[] entries; <span class="comment">//元素内容数组</span></span><br><span class="line">  int8 zlend;  <span class="comment">//标记压缩列表的结束，魔法值，为0xFF</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>元素结构</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">entry</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span>&lt;var&gt; prevlen;  <span class="comment">//前一个entry的字节长度</span></span><br><span class="line">  <span class="keyword">int</span>&lt;var&gt; encoding;  <span class="comment">//元素类型编码</span></span><br><span class="line">  optional <span class="keyword">byte</span>[] content; <span class="comment">//元素内容</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>ziplist关键逻辑：</p>
 <ul>
 <li>级联更新：元素结构体中的prevlen是会根据前一个元素的改变实时更新的，会触发级联更新</li>
@@ -206,94 +233,752 @@
 <li>encoding设计十分复杂，可以表示数据类型、数据长度，甚至可以直接存储极小的整数（0-12）</li>
 <li>新增元素时需要重新分配内存</li>
 </ul>
-<h2 id="intset小整数集合"><a href="#intset小整数集合" class="headerlink" title="intset小整数集合"></a>intset小整数集合</h2><p>在 <code>set</code> 集合元素都是整数且元素较少 <code>&lt;512</code> 时，会使用 <code>intset</code> 进行存储， <code>intset</code> 支持16、32、64位整数，结构为紧凑型数组。</p>
+<h2 id="intset小整数集合">intset小整数集合</h2>
+<p>在 <code>set</code> 集合元素都是整数且元素较少 <code>&lt;512</code> 时，会使用 <code>intset</code> 进行存储， <code>intset</code> 支持16、32、64位整数，结构为紧凑型数组。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">intset</span>&lt;T&gt; &#123;</span></span><br><span class="line">	int32 encoding; <span class="comment">//决定整数是多少位的，16/32/64</span></span><br><span class="line">  int32 length;  <span class="comment">//元素个数</span></span><br><span class="line">  <span class="keyword">int</span>&lt;T&gt; contents; <span class="comment">//整数数组</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="快速列表"><a href="#快速列表" class="headerlink" title="快速列表"></a>快速列表</h2><p>快速列表结合了 <code>ziplist</code> 和 <code>linkedlist</code> ，在元素少时，只使用 <code>ziplist</code> ，元素较多时，把 <code>ziplist</code> 使用 <code>双向循环指针</code> 链接起来，成为一个由 <code>ziplist</code> 作为元素的 <code>linkedlist</code> 。</p>
+<h2 id="快速列表">快速列表</h2>
+<p>快速列表结合了 <code>ziplist</code> 和 <code>linkedlist</code> ，在元素少时，只使用 <code>ziplist</code> ，元素较多时，把 <code>ziplist</code> 使用 <code>双向循环指针</code> 链接起来，成为一个由 <code>ziplist</code> 作为元素的 <code>linkedlist</code> 。</p>
 <p>关键逻辑：</p>
 <ul>
 <li>ziplist节点本身也是可以压缩的，使用的是 <code>LZF算法</code> 压缩，可以选择压缩深度，所谓的压缩深度就是从首尾算起多少个元素可以不压缩，深度为0就是不压缩，深度大于0时越大压缩的ziplist越少。</li>
 <li>一个ziplist存储有空间限制，可以通过 <code>list-max-ziplist-size</code> 设定，默认为8KB</li>
 </ul>
-<h2 id="跳跃列表"><a href="#跳跃列表" class="headerlink" title="跳跃列表"></a>跳跃列表</h2><p>数据结构 <code>zset</code> 是复合结构，其中的结构包含了一个 <code>hash字典</code> 和 一个 <code>skiplist跳跃列表</code> ，其中 <code>skiplist</code> 是比较复杂的。</p>
-<img src="/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/img1.png" class="" title="img1">
-
+<h2 id="跳跃列表">跳跃列表</h2>
+<p>数据结构 <code>zset</code> 是复合结构，其中的结构包含了一个 <code>hash字典</code> 和 一个 <code>skiplist跳跃列表</code> ，其中 <code>skiplist</code> 是比较复杂的。</p>
+<img src="/.io//05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/img1.png" class title="img1">
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//zslnode 跳表节点</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">zslnode</span> &#123;</span></span><br><span class="line">	<span class="built_in">string</span> value;</span><br><span class="line">	<span class="keyword">double</span> score;</span><br><span class="line">  zslnode*[] forwards; <span class="comment">//多层链接指针</span></span><br><span class="line">	zslnode* backward; <span class="comment">//回溯指针</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//zsl 跳表</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">zsl</span> &#123;</span></span><br><span class="line">	zslnode* header; <span class="comment">//跳跃列表表头指针(kv head)</span></span><br><span class="line">	<span class="keyword">int</span> maxLevel;  <span class="comment">//跳表最高层</span></span><br><span class="line">  <span class="built_in">map</span>&lt;<span class="built_in">string</span>, zslnode*&gt; ht; <span class="comment">//hash结构键值对</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="随机层数"><a href="#随机层数" class="headerlink" title="随机层数"></a>随机层数</h3><p>对于每一个新插入的元素，会调用一个随机算法来计算他最高处于哪个层，理论上每升一层的概率是50%，但是redis为了限制层高，把这个概率设置为了25%，也就是实际上redis中的跳表比理论的更矮。</p>
-<h3 id="插入过程"><a href="#插入过程" class="headerlink" title="插入过程"></a>插入过程</h3><ol>
+<h3 id="随机层数">随机层数</h3>
+<p>对于每一个新插入的元素，会调用一个随机算法来计算他最高处于哪个层，理论上每升一层的概率是50%，但是redis为了限制层高，把这个概率设置为了25%，也就是实际上redis中的跳表比理论的更矮。</p>
+<h3 id="插入过程">插入过程</h3>
+<ol>
 <li>首先找到搜索路径</li>
 <li>创建新节点，随机获取当前节点的层高</li>
 <li>把节点的指针指向到对应的前后节点</li>
 </ol>
-<h3 id="更新过程"><a href="#更新过程" class="headerlink" title="更新过程"></a>更新过程</h3><ol>
+<h3 id="更新过程">更新过程</h3>
+<ol>
 <li>找到对应的节点，如果需要更新，就删除</li>
 <li>插入新节点</li>
 </ol>
-<h3 id="删除过程"><a href="#删除过程" class="headerlink" title="删除过程"></a>删除过程</h3><ol>
+<h3 id="删除过程">删除过程</h3>
+<ol>
 <li>获取节点</li>
 <li>删除节点</li>
 </ol>
-<h3 id="元素排名"><a href="#元素排名" class="headerlink" title="元素排名"></a>元素排名</h3><p><code>rank</code> 是通过存储在 forward指针中的span（跨度）属性计算的，具体是在获取节点时，获取到搜索路径，将搜索路径中的span相加，就获得了排名了</p>
+<h3 id="元素排名">元素排名</h3>
+<p><code>rank</code> 是通过存储在 forward指针中的span（跨度）属性计算的，具体是在获取节点时，获取到搜索路径，将搜索路径中的span相加，就获得了排名了</p>
+</div>
 
-        </div>
+
+      <!-- 文章结尾处理 -->
+      <div class="ui divider title-divider"></div>
+      <div class="post-rating">
+        <p>如果喜欢这篇文章，可以给作者评个份哦~</p>
+        <!-- 评分 -->
         
-<blockquote class="copyright">
-    <p><strong>本文链接 : </strong><a class="permalink" href="https://chingkwok.github.io/2022/05/01/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">https://chingkwok.github.io/2022/05/01/Redis数据结构源码学习笔记/</a></p>
-    <p><strong>This article is available under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a> License</strong></p>
-</blockquote>
+        <!-- 文章评论功能 -->
+<div id="wpac-rating"></div>
+<script type="text/javascript">
+  wpac_init = window.wpac_init || [];
+  wpac_init.push({
+    widget: 'Rating',
+    id: 30332
+  });
+  (function() {
+    if ('WIDGETPACK_LOADED' in window) return;
+    WIDGETPACK_LOADED = true;
+    var mc = document.createElement('script');
+    mc.type = 'text/javascript';
+    mc.async = true;
+    mc.src = 'https://embed.widgetpack.com/widget.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(mc, s.nextSibling);
+  })();
+</script>
 
-
-    </article>
-    
-    <section id="comments">
         
-    </section>
-
-
-    
-
-</main>
-
-
-<aside style="" id="sidebar" class="aside aside-fixture">
-    <div class="toc-sidebar">
-        <nav id="toc" class="article-toc">
-            <h3 class="toc-title">文章目录</h3>
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#【2022-5-28】Redis源码"><span class="toc-number">1.</span> <span class="toc-text">【2022.5.28】Redis源码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串源码"><span class="toc-number">1.1.</span> <span class="toc-text">字符串源码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#扩容策略"><span class="toc-number">1.1.1.</span> <span class="toc-text">扩容策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字典结构"><span class="toc-number">1.2.</span> <span class="toc-text">字典结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#压缩列表（ziplist）"><span class="toc-number">1.3.</span> <span class="toc-text">压缩列表（ziplist）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#intset小整数集合"><span class="toc-number">1.4.</span> <span class="toc-text">intset小整数集合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快速列表"><span class="toc-number">1.5.</span> <span class="toc-text">快速列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#跳跃列表"><span class="toc-number">1.6.</span> <span class="toc-text">跳跃列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#随机层数"><span class="toc-number">1.6.1.</span> <span class="toc-text">随机层数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#插入过程"><span class="toc-number">1.6.2.</span> <span class="toc-text">插入过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更新过程"><span class="toc-number">1.6.3.</span> <span class="toc-text">更新过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除过程"><span class="toc-number">1.6.4.</span> <span class="toc-text">删除过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#元素排名"><span class="toc-number">1.6.5.</span> <span class="toc-text">元素排名</span></a></li></ol></li></ol></li></ol>
-        </nav>
+        <p class="extra-speaking">原文声明: "转载本站文章请注明作者和出处Nothinglin ，请勿用于任何商业用途"</p>
+        <p>公众号：苦逼的学生仔</p>
+      </div>
     </div>
-</aside>
+  </div>
+
+  <!-- 上一篇、下一篇 -->
+  <div class="ui segment background-thin-yellow content">
+    <div class="ui segment background-thin-yellow border-background-less page-prev-next">
+      
+      <a href="/2022/05/25/JVM%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8G1%E5%AF%B9%E6%AF%94CMS%E7%AC%94%E8%AE%B0/" title='JVM垃圾回收器G1对比CMS笔记'>
+        <span class="page-prev">上一篇</span>
+      </a>
+      
+
+      
+      <a href="/2022/04/22/Redis-IO%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" title='Redis IO线程模型'>
+        <span class="page-next">下一篇</span>
+      </a>
+      
+
+    </div>
+  </div>
+
+  <!-- 文章评论功能 -->
+  <div class="ui segment background-thin-yellow content">
+    <div class="ui segment background-thin-yellow border-background-less">
+      <!-- 评论系统 -->
+      <!-- 来必力 -->
+      
+      <!-- twikoo -->
+      
+
+    </div>
+  </div>
+
+</div>
+
+      <!-- 侧边栏 -->
+<div class="five wide column">
+  <!-- 文章目录 -->
+  
+  <!-- 文章内容页面中的目录栏 -->
+<div class="ui segment background-thin-yellow article-toc">
+  <div class="ui segment background-title-red padding-title">
+    <h4 class="header ">文章目录：</h4>
+  </div>
+  <div class="container-toc">
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#【2022-5-28】Redis源码"><span class="toc-text">【2022.5.28】Redis源码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#字符串源码"><span class="toc-text">字符串源码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#扩容策略"><span class="toc-text">扩容策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字典结构"><span class="toc-text">字典结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#压缩列表（ziplist）"><span class="toc-text">压缩列表（ziplist）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#intset小整数集合"><span class="toc-text">intset小整数集合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快速列表"><span class="toc-text">快速列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#跳跃列表"><span class="toc-text">跳跃列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#随机层数"><span class="toc-text">随机层数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#插入过程"><span class="toc-text">插入过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更新过程"><span class="toc-text">更新过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#删除过程"><span class="toc-text">删除过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#元素排名"><span class="toc-text">元素排名</span></a></li></ol></li></ol></li></ol>
+  </div>
+</div>
+
+  
+
+  <div class="ui segment background-thin-yellow">
+    <div class="ui segment background-title-red padding-title">
+      <h4 class="header ">成就墙：</h4>
+    </div>
+    <!-- <p>这里是饼图文章统计，直观地展示文章的分类数目和其下的文章数~</p> -->
+    <div id="categories-echarts" style="height: 100%"></div>
+
+  </div>
+
+  <!-- <div class="ui segment background-thin-yellow">
+    <div class="ui segment background-title-red padding-title">
+      <h4 class="header ">2023倒计时：</h4>
+    </div>
+
+    <div class="countdowntimer">
+  <ul id="countdown">
+    <li>
+      <p class="timeRefDays">days</p>
+      <span class="days"></span>
+    </li>
+    <li>
+      <p class="timeRefHours">hours</p>
+      <span class="hours"></span>
+    </li>
+    <li>
+      <p class="timeRefMinutes">minutes</p>
+      <span class="minutes"></span>
+    </li>
+    <li>
+      <p class="timeRefSeconds">seconds</p>
+      <span class="seconds"></span>
+    </li>
+  </ul>
+</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-player/1.4.3/lottie-player.js"></script>
+    <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_bmfjctya.json"  background="transparent"  speed="1"  style="width: 300px; height: 300px;"  loop autoplay></lottie-player>
+  </div> -->
 
 
+  <div class="ui segment background-thin-yellow">
+    <div class="ui segment background-title-red padding-title">
+      <h4 class="header ">文章分类：</h4>
+    </div>
+    <div class="row-flex flex-wrap categories-lists">
+      
+      <a class="category-tab" id="category-next"><i class="angle double right icon"></i>更多</a>
+    </div>
+  </div>
 
+  <div class="ui segment background-thin-yellow">
+    <div class="ui segment background-title-red padding-title">
+      <h4 class="header ">文章标签：</h4>
+    </div>
+    <div class="row-flex flex-wrap tabs-lists">
+      
+      <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" class="category-tab">分布式</a>
+      
+      <a href="/tags/centos/" class="category-tab">centos</a>
+      
+      <a href="/tags/docker/" class="category-tab">docker</a>
+      
+      <a href="/tags/mysql/" class="category-tab">mysql</a>
+      
+      <a href="/tags/jvm/" class="category-tab">jvm</a>
+      
+      <a href="/tags/git/" class="category-tab">git</a>
+      
+      <a href="/tags/java/" class="category-tab">java</a>
+      
+      <a href="/tags/hotspot/" class="category-tab">hotspot</a>
+      
+      <a href="/tags/%E7%BA%BF%E7%A8%8B/" class="category-tab">线程</a>
+      
+      <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" class="category-tab">多线程</a>
+      
+      <a href="/tags/%E9%94%81/" class="category-tab">锁</a>
+      
+      <a href="/tags/rabbitmq/" class="category-tab">rabbitmq</a>
+      
+      <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="category-tab">消息队列</a>
+      
+      <a href="/tags/redis/" class="category-tab">redis</a>
+      
+      <a href="/tags/%E6%BA%90%E7%A0%81/" class="category-tab">源码</a>
+      
+      <a href="/tags/spring/" class="category-tab">spring</a>
+      
+      <a href="/tags/freeMarker/" class="category-tab">freeMarker</a>
+      
+      <a href="/tags/mybatis/" class="category-tab">mybatis</a>
+      
+      <a href="/tags/%E7%BC%93%E5%AD%98/" class="category-tab">缓存</a>
+      
+      <a href="/tags/%E7%AE%97%E6%B3%95/" class="category-tab">算法</a>
+      
+      <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="category-tab">设计模式</a>
+      
+      <a href="/tags/TCP/" class="category-tab">TCP</a>
+      
+      <a class="category-tab" id="tab-next"><i class="angle double right icon"></i>更多</a>
+    </div>
+  </div>
 
+  <!-- <div class="ui segment background-thin-yellow">
+    <div class="ui segment background-title-red padding-title">
+      <h4 class="header ">订阅作者：</h4>
+    </div>
 
-        </section>
-        <footer class="hidden lg:block fixed bottom-0 left-0 sm:w-1/12 lg:w-1/6 bg-gray-100 z-40">
+    <div class="ui card margin-auto">
+      <div class="image">
+        <img src="/img/subscribe.jpg">
+      </div>
+    </div>
+  </div> -->
+</div>
+<!-- 不要删，下面这两个不是多余的，它是文章列表和侧边栏布局的div结尾标签 -->
+
+    </div>
+  </div>
+  <footer class="ui segment attached background-deep-green margin-top-30">
+  <div class="ui container ">
+    <div class="ui grid stackable footer-hide">
+      <!-- 缩略图 -->
+      <div class="four wide column">
+        <div class="ui card margin-10">
+          <div class="image padding-5">
+            <img class="ui small image" src="/img/chingkwok.jpg">
+          </div>
+        </div>
+      </div>
+      <!-- 内容简介 -->
+      <div class="eleven wide column post-calendar">
+        
+<div id="post-calendar" class="card-content"></div>
+
+<style type="text/css">
+    #post-calendar {
+        width: 847px;
+        height: 236px;
+        margin-bottom: 30px;
+        background-color: #FFFFFF;
+        border-radius: 5px;
+    }
+   #post-calendar  canvas{
+      margin-top:30px!important;
+      margin-bottom:20px!important;
+      padding-bottom:30px;
+    }
+</style>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cungudafa/cdn/js/echarts.min.js"></script>
+<script type="text/javascript">
+    let myChart = echarts.init(document.getElementById('post-calendar'));
     
-    
+    var option = {
+        title: {
+            top: 0,
+            text: 'Articles-Contributions',
+            left: 'center',
+            textStyle: {
+                color: '#3C4858'
+            }
+        },
+        tooltip: {
+            padding: 10,
+            backgroundColor: '#555',
+            borderColor: '#777',
+            borderWidth: 1,
+            formatter: function (obj) {
+                var value = obj.value;
+                return '<div style="font-size: 14px;">' + value[0] + '：' + value[1] + '</div>';
+            }
+        },
+        visualMap: {
+            show: true,
+            showLabel: true,
+            categories: [0, 1, 2, 3, 4],
+            calculable: true,
+            inRange: {
+                symbol: 'rect',
+                color: ['#ebedf0', '#c6e48b', '#7bc96f', '#239a3b', '#196127']
+            },
+            itemWidth: 12,
+            itemHeight: 12,
+            orient: 'horizontal',
+            left: 'center',
+            bottom: 0
+        },
+        calendar: [{
+            left: 'center',
+            range: ["2022-03-06", "2023-03-06"],
+            cellSize: [13, 13],
+            splitLine: {
+                show: false
+            },
+            itemStyle: {
+                width: '1.88679%',
+                height: '15px',
+                color: '#EEEEEE',
+                borderColor: '#FFF',
+                borderWidth: 2
+            },
+            yearLabel: {
+                show: false
+            },
+            monthLabel: {
+                nameMap: 'cn',
+                fontWeight: 'lighter',
+                fontSize: 12
+            },
+            dayLabel: {
+                show: true,
+                formatter: '{start}  1st',
+                fontWeight: 'lighter',
+                nameMap: ['日',' ',' ','三',' ',' ','六',],
+                fontSize: 12
+            }
+        }],
+        series: [{
+            type: 'heatmap',
+            coordinateSystem: 'calendar',
+            calendarIndex: 0,
+            data: [["2022-03-06", 0], ["2022-03-07", 0], ["2022-03-08", 0], ["2022-03-09", 0], ["2022-03-10", 0], ["2022-03-11", 0], ["2022-03-12", 0], ["2022-03-13", 0], ["2022-03-14", 0], ["2022-03-15", 0], ["2022-03-16", 0], ["2022-03-17", 0], ["2022-03-18", 0], ["2022-03-19", 0], ["2022-03-20", 1], ["2022-03-21", 0], ["2022-03-22", 0], ["2022-03-23", 0], ["2022-03-24", 0], ["2022-03-25", 0], ["2022-03-26", 0], ["2022-03-27", 0], ["2022-03-28", 0], ["2022-03-29", 0], ["2022-03-30", 0], ["2022-03-31", 0], ["2022-04-01", 0], ["2022-04-02", 0], ["2022-04-03", 0], ["2022-04-04", 0], ["2022-04-05", 0], ["2022-04-06", 0], ["2022-04-07", 0], ["2022-04-08", 0], ["2022-04-09", 0], ["2022-04-10", 1], ["2022-04-11", 0], ["2022-04-12", 0], ["2022-04-13", 0], ["2022-04-14", 0], ["2022-04-15", 0], ["2022-04-16", 0], ["2022-04-17", 0], ["2022-04-18", 0], ["2022-04-19", 0], ["2022-04-20", 0], ["2022-04-21", 0], ["2022-04-22", 1], ["2022-04-23", 0], ["2022-04-24", 0], ["2022-04-25", 0], ["2022-04-26", 0], ["2022-04-27", 0], ["2022-04-28", 0], ["2022-04-29", 0], ["2022-04-30", 0], ["2022-05-01", 1], ["2022-05-02", 0], ["2022-05-03", 0], ["2022-05-04", 0], ["2022-05-05", 0], ["2022-05-06", 0], ["2022-05-07", 0], ["2022-05-08", 0], ["2022-05-09", 0], ["2022-05-10", 0], ["2022-05-11", 0], ["2022-05-12", 0], ["2022-05-13", 0], ["2022-05-14", 0], ["2022-05-15", 0], ["2022-05-16", 0], ["2022-05-17", 0], ["2022-05-18", 0], ["2022-05-19", 0], ["2022-05-20", 0], ["2022-05-21", 0], ["2022-05-22", 0], ["2022-05-23", 0], ["2022-05-24", 0], ["2022-05-25", 1], ["2022-05-26", 0], ["2022-05-27", 0], ["2022-05-28", 0], ["2022-05-29", 1], ["2022-05-30", 0], ["2022-05-31", 0], ["2022-06-01", 0], ["2022-06-02", 0], ["2022-06-03", 0], ["2022-06-04", 0], ["2022-06-05", 1], ["2022-06-06", 0], ["2022-06-07", 0], ["2022-06-08", 0], ["2022-06-09", 0], ["2022-06-10", 0], ["2022-06-11", 0], ["2022-06-12", 0], ["2022-06-13", 0], ["2022-06-14", 0], ["2022-06-15", 0], ["2022-06-16", 0], ["2022-06-17", 0], ["2022-06-18", 0], ["2022-06-19", 0], ["2022-06-20", 0], ["2022-06-21", 0], ["2022-06-22", 0], ["2022-06-23", 0], ["2022-06-24", 0], ["2022-06-25", 0], ["2022-06-26", 0], ["2022-06-27", 0], ["2022-06-28", 0], ["2022-06-29", 0], ["2022-06-30", 0], ["2022-07-01", 0], ["2022-07-02", 1], ["2022-07-03", 0], ["2022-07-04", 0], ["2022-07-05", 0], ["2022-07-06", 0], ["2022-07-07", 0], ["2022-07-08", 0], ["2022-07-09", 0], ["2022-07-10", 0], ["2022-07-11", 0], ["2022-07-12", 0], ["2022-07-13", 0], ["2022-07-14", 0], ["2022-07-15", 0], ["2022-07-16", 0], ["2022-07-17", 0], ["2022-07-18", 0], ["2022-07-19", 0], ["2022-07-20", 0], ["2022-07-21", 0], ["2022-07-22", 0], ["2022-07-23", 0], ["2022-07-24", 0], ["2022-07-25", 0], ["2022-07-26", 0], ["2022-07-27", 0], ["2022-07-28", 0], ["2022-07-29", 0], ["2022-07-30", 0], ["2022-07-31", 0], ["2022-08-01", 0], ["2022-08-02", 0], ["2022-08-03", 0], ["2022-08-04", 0], ["2022-08-05", 0], ["2022-08-06", 0], ["2022-08-07", 0], ["2022-08-08", 0], ["2022-08-09", 0], ["2022-08-10", 0], ["2022-08-11", 0], ["2022-08-12", 0], ["2022-08-13", 0], ["2022-08-14", 0], ["2022-08-15", 0], ["2022-08-16", 0], ["2022-08-17", 0], ["2022-08-18", 0], ["2022-08-19", 0], ["2022-08-20", 0], ["2022-08-21", 0], ["2022-08-22", 0], ["2022-08-23", 0], ["2022-08-24", 0], ["2022-08-25", 0], ["2022-08-26", 0], ["2022-08-27", 0], ["2022-08-28", 0], ["2022-08-29", 0], ["2022-08-30", 0], ["2022-08-31", 0], ["2022-09-01", 0], ["2022-09-02", 0], ["2022-09-03", 0], ["2022-09-04", 0], ["2022-09-05", 0], ["2022-09-06", 0], ["2022-09-07", 0], ["2022-09-08", 0], ["2022-09-09", 0], ["2022-09-10", 0], ["2022-09-11", 0], ["2022-09-12", 0], ["2022-09-13", 0], ["2022-09-14", 0], ["2022-09-15", 0], ["2022-09-16", 0], ["2022-09-17", 0], ["2022-09-18", 0], ["2022-09-19", 0], ["2022-09-20", 0], ["2022-09-21", 0], ["2022-09-22", 0], ["2022-09-23", 0], ["2022-09-24", 0], ["2022-09-25", 0], ["2022-09-26", 0], ["2022-09-27", 0], ["2022-09-28", 0], ["2022-09-29", 0], ["2022-09-30", 0], ["2022-10-01", 0], ["2022-10-02", 0], ["2022-10-03", 0], ["2022-10-04", 0], ["2022-10-05", 0], ["2022-10-06", 0], ["2022-10-07", 0], ["2022-10-08", 0], ["2022-10-09", 0], ["2022-10-10", 0], ["2022-10-11", 0], ["2022-10-12", 0], ["2022-10-13", 0], ["2022-10-14", 0], ["2022-10-15", 0], ["2022-10-16", 0], ["2022-10-17", 0], ["2022-10-18", 0], ["2022-10-19", 0], ["2022-10-20", 0], ["2022-10-21", 0], ["2022-10-22", 0], ["2022-10-23", 0], ["2022-10-24", 0], ["2022-10-25", 0], ["2022-10-26", 0], ["2022-10-27", 0], ["2022-10-28", 0], ["2022-10-29", 0], ["2022-10-30", 0], ["2022-10-31", 0], ["2022-11-01", 0], ["2022-11-02", 0], ["2022-11-03", 0], ["2022-11-04", 0], ["2022-11-05", 0], ["2022-11-06", 0], ["2022-11-07", 0], ["2022-11-08", 0], ["2022-11-09", 0], ["2022-11-10", 0], ["2022-11-11", 0], ["2022-11-12", 0], ["2022-11-13", 0], ["2022-11-14", 0], ["2022-11-15", 0], ["2022-11-16", 0], ["2022-11-17", 0], ["2022-11-18", 0], ["2022-11-19", 0], ["2022-11-20", 0], ["2022-11-21", 0], ["2022-11-22", 0], ["2022-11-23", 0], ["2022-11-24", 0], ["2022-11-25", 0], ["2022-11-26", 0], ["2022-11-27", 0], ["2022-11-28", 0], ["2022-11-29", 0], ["2022-11-30", 0], ["2022-12-01", 0], ["2022-12-02", 0], ["2022-12-03", 0], ["2022-12-04", 0], ["2022-12-05", 0], ["2022-12-06", 0], ["2022-12-07", 0], ["2022-12-08", 0], ["2022-12-09", 0], ["2022-12-10", 0], ["2022-12-11", 0], ["2022-12-12", 0], ["2022-12-13", 0], ["2022-12-14", 0], ["2022-12-15", 0], ["2022-12-16", 0], ["2022-12-17", 0], ["2022-12-18", 0], ["2022-12-19", 0], ["2022-12-20", 0], ["2022-12-21", 0], ["2022-12-22", 0], ["2022-12-23", 0], ["2022-12-24", 0], ["2022-12-25", 0], ["2022-12-26", 0], ["2022-12-27", 0], ["2022-12-28", 0], ["2022-12-29", 0], ["2022-12-30", 0], ["2022-12-31", 0], ["2023-01-01", 0], ["2023-01-02", 0], ["2023-01-03", 0], ["2023-01-04", 0], ["2023-01-05", 0], ["2023-01-06", 0], ["2023-01-07", 0], ["2023-01-08", 0], ["2023-01-09", 0], ["2023-01-10", 0], ["2023-01-11", 0], ["2023-01-12", 0], ["2023-01-13", 0], ["2023-01-14", 0], ["2023-01-15", 0], ["2023-01-16", 0], ["2023-01-17", 0], ["2023-01-18", 0], ["2023-01-19", 0], ["2023-01-20", 0], ["2023-01-21", 0], ["2023-01-22", 0], ["2023-01-23", 0], ["2023-01-24", 0], ["2023-01-25", 0], ["2023-01-26", 0], ["2023-01-27", 0], ["2023-01-28", 0], ["2023-01-29", 0], ["2023-01-30", 0], ["2023-01-31", 0], ["2023-02-01", 0], ["2023-02-02", 0], ["2023-02-03", 0], ["2023-02-04", 0], ["2023-02-05", 0], ["2023-02-06", 0], ["2023-02-07", 0], ["2023-02-08", 0], ["2023-02-09", 0], ["2023-02-10", 0], ["2023-02-11", 0], ["2023-02-12", 0], ["2023-02-13", 0], ["2023-02-14", 0], ["2023-02-15", 0], ["2023-02-16", 0], ["2023-02-17", 0], ["2023-02-18", 0], ["2023-02-19", 0], ["2023-02-20", 0], ["2023-02-21", 0], ["2023-02-22", 0], ["2023-02-23", 0], ["2023-02-24", 0], ["2023-02-25", 0], ["2023-02-26", 0], ["2023-02-27", 0], ["2023-02-28", 0], ["2023-03-01", 0], ["2023-03-02", 0], ["2023-03-03", 0], ["2023-03-04", 0], ["2023-03-05", 0], ["2023-03-06", 0]]
+        }]
+    };
+    myChart.setOption(option);
+</script>
+
+      </div>
+
+    </div>
+    <!-- 分割线 -->
+    <div class="ui divider title-divider footer-hide"></div>
+    <div class="ui container margin-top-10 page-footer"><a href="http://beian.miit.gov.cn" target="_blank">粤ICP备2023006189号</a> | Powered by Hexo | Based on Theme: hexo-theme-Nothinglin by Nothinglin.</div>
+    <div class="ui container margin-top-10 page-footer"><div style="width:300px;margin:0 auto; padding:20px 0;"><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44011302003884" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/img/gonganbeian.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">粤公网安备 44011302003884号</p></a></div></div>
+    <div class="ui container margin-top-10 page-footer">本博客已运行:<span id=span_dt_dt ></span>天了
+<script language=javascript>
+  function show_date_time() {
+    window.setTimeout("show_date_time()", 1000);
+    BirthDay = new Date("5/2/2021 22:22:45");
+    today = new Date();
+    timeold = (today.getTime() - BirthDay.getTime());
+    sectimeold = timeold / 1000
+    secondsold = Math.floor(sectimeold);
+    msPerDay = 24 * 60 * 60 * 1000
+    e_daysold = timeold / msPerDay
+    daysold = Math.floor(e_daysold);
+    e_hrsold = (e_daysold - daysold) * 24;
+    hrsold = Math.floor(e_hrsold);
+    e_minsold = (e_hrsold - hrsold) * 60;
+    minsold = Math.floor((e_hrsold - hrsold) * 60);
+    seconds = Math.floor((e_minsold - minsold) * 60);
+    span_dt_dt.innerHTML = '<font style=color:#f3eee5>' + daysold + '</font> 天 <font style=color:#f3eee5>' + hrsold + '</font> 时 <font style=color:#f3eee5>' + minsold + '</font> 分 <font style=color:#f3eee5>' + seconds + '</font> 秒';
+  }
+  show_date_time();
+</script>
+</div>
+    <div class="ui container margin-top-10 page-footer">
+      本站总浏览次数：<a href="https://www.hitwebcounter.com" target="_blank" class="counter-a"><img src="https://hitwebcounter.com/counter/counter.php?page=7909387&style=0006&nbdigits=1&type=page&initCount=0" title="Free Counter" Alt="web counter"   border="0" class="counter-img"/></a>  次 |
+      本站总访问人数：<a href="https://www.hitwebcounter.com" target="_blank"  class="counter-a"><img src="https://hitwebcounter.com/counter/counter.php?page=7909389&style=0006&nbdigits=1&type=ip&initCount=0" title="Free Counter" Alt="web counter"   border="0" class="counter-img"/></a>  人
+
+    </div>
+  </div>
 </footer>
 
-        <div id="mask" class="hidden mask fixed inset-0 bg-gray-900 opacity-75 z-40"></div>
-        <div id="search-view-container" class="hidden shadow-xl"></div>
-        
-<script src="/js/dom-event.min.js"></script>
+  <!-- gototop按钮 -->
+  <button class="gototop"><i class="arrow alternate circle up outline icon big font-thin-yellow"></i></button>
+  <!-- semantic ui js资源 -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function() {
+
+    var list = $(".tabs-lists a");
+    var numToShow = 15;
+    var button = $("#tab-next");
+    var numInList = list.length;
+    list.hide();
+    if (numInList > numToShow) {
+      button.show();
+    }
+    list.slice(0, numToShow).show();
+
+    button.click(function() {
+      var showing = list.filter(':visible').length;
+      list.slice(showing - 1, showing + numToShow).fadeIn();
+      var nowShowing = list.filter(':visible').length;
+      if (nowShowing >= numInList) {
+        button.hide();
+      }
+    });
+
+  });
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+
+    var list = $(".categories-lists a");
+    var numToShow = 15;
+    var button = $("#category-next");
+    var numInList = list.length;
+    list.hide();
+    if (numInList > numToShow) {
+      button.show();
+    }
+    list.slice(0, numToShow).show();
+
+    button.click(function() {
+      var showing = list.filter(':visible').length;
+      list.slice(showing - 1, showing + numToShow).fadeIn();
+      var nowShowing = list.filter(':visible').length;
+      if (nowShowing >= numInList) {
+        button.hide();
+      }
+    });
+
+  });
+</script>
 
 
+<script type="text/javascript">
+  $(document).ready(function() {
 
-<script src="/js/local-search.min.js"></script>
+    var list = $(".tag1-lists a");
+    var numToShow = 15;
+    var button = $("#tag1-next");
+    var numInList = list.length;
+    list.hide();
+    if (numInList > numToShow) {
+      button.show();
+    }
+    list.slice(0, numToShow).show();
+
+    button.click(function() {
+      var showing = list.filter(':visible').length;
+      list.slice(showing - 1, showing + numToShow).fadeIn();
+      var nowShowing = list.filter(':visible').length;
+      if (nowShowing >= numInList) {
+        button.hide();
+      }
+    });
+
+  });
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+
+    var list = $(".tag2-lists a");
+    var numToShow = 15;
+    var button = $("#tag2-next");
+    var numInList = list.length;
+    list.hide();
+    if (numInList > numToShow) {
+      button.show();
+    }
+    list.slice(0, numToShow).show();
+
+    button.click(function() {
+      var showing = list.filter(':visible').length;
+      list.slice(showing - 1, showing + numToShow).fadeIn();
+      var nowShowing = list.filter(':visible').length;
+      if (nowShowing >= numInList) {
+        button.hide();
+      }
+    });
+
+  });
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+
+    var list = $(".category1-lists a");
+    var numToShow = 15;
+    var button = $("#category1-next");
+    var numInList = list.length;
+    list.hide();
+    if (numInList > numToShow) {
+      button.show();
+    }
+    list.slice(0, numToShow).show();
+
+    button.click(function() {
+      var showing = list.filter(':visible').length;
+      list.slice(showing - 1, showing + numToShow).fadeIn();
+      var nowShowing = list.filter(':visible').length;
+      if (nowShowing >= numInList) {
+        button.hide();
+      }
+    });
+
+  });
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+
+    var list = $(".category2-lists a");
+    var numToShow = 15;
+    var button = $("#category2-next");
+    var numInList = list.length;
+    list.hide();
+    if (numInList > numToShow) {
+      button.show();
+    }
+    list.slice(0, numToShow).show();
+
+    button.click(function() {
+      var showing = list.filter(':visible').length;
+      list.slice(showing - 1, showing + numToShow).fadeIn();
+      var nowShowing = list.filter(':visible').length;
+      if (nowShowing >= numInList) {
+        button.hide();
+      }
+    });
+
+  });
+</script>
+
+  <!-- 代码高亮插件 -->
+
+<script src="/lib/enlighterjs.min.js"></script>
+
+<script type="text/javascript">
+  // INIT CODE - simple page-wide initialization based on css selectors
+  // - highlight all pre + code tags (CSS3 selectors)
+  // - use javascript as default language
+  // - use theme "enlighter" as default theme
+  // - replace tabs with 2 spaces
+  EnlighterJS.init('pre', 'code', {
+    language: 'javascript',
+    theme: 'enlighter',
+    textOverflow: 'scroll',
+    indent: 2
+  });
+</script>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script type="text/javascript">
+  var dom = document.getElementById("categories-echarts");
+  var categoriesChart = echarts.init(dom);
+  var app = {};
+  var option;
 
 
-
-    <script src="//cdn.jsdelivr.net/npm/lightgallery.js@1.1.3/dist/js/lightgallery.min.js"></script>
-    
-<script src="/js/light-gallery.min.js"></script>
+<!-- 核心关键 -->
+  
 
 
+  option = {
+    series: [{
+      name: '分类统计',
+      type: 'pie',
+      radius: '55%',
+      data: []
+    }],
+      tooltip: {}
+  };
+
+  if (option && typeof option === 'object') {
+    categoriesChart.setOption(option);
+  }
+</script>
+
+  
+<script src="/js/jquery.gototop.min.js"></script>
+
+<!-- gototop 脚本 -->
+<script type="text/javascript">
+  $(function() {
+    // $(".gototop").gototop();
+    $(".gototop").gototop({
+      position: 0,
+      duration: 1250,
+      visibleAt: 300,
+      classname: "isvisible"
+    });
+  });
+</script>
+
+  
+<script src="/js/search.js"></script>
+
+<script type="text/javascript">
+  //单击弹出窗口事件
+  $(document).ready(function() {
+    $("#nav-search").click(function() {
+      $('.ui.modal').modal('show');
+      event.preventDefault();
+    });
+    //搜索功能初始化
+    if ($('.local-search').length) {
+      $.getScript('/js/search.js', function() {
+        searchFunc("/search.xml", 'local-search-input', 'local-search-result');
+      });
+    }
+  });
+
+</script>
+
+  <!-- 这是nav菜单栏的选中状态代码 -->
+<script type="text/javascript">
+  $(document).ready(function() {
+    // 获取导航栏中元素
+    let navs = document.querySelectorAll(".item");
+    // 获取当前页面中的地址
+    let pagePath = window.location.pathname;
+    for (let nav of navs) {
+      // 获取属性
+      let navPath = nav.getAttribute("data-path");
+      // alert(pagePath)
+      // console.log(nav.className)
+      if (navPath === pagePath) {
+        // console.log(pagePath)
+        nav.className = "item menu-active";
+      }
+    }
+  });
+</script>
+
+  <script type="text/javascript">
+  $(document).ready(function() {
+    // 获取导航栏中元素
+    let pagePath = window.location.href;
+    // alert(pagePath)
+    let tabs = document.querySelectorAll(".tabs-nav");
+    for (let tab of tabs) {
+      // console.log(nav.href);
+      let tabPath = tab.href;
+      if (tabPath === pagePath) {
+        // console.log(pagePath)
+        tab.className = "tabs-nav  tabs-active";
+      }
+    }
+  });
+</script>
+
+  <!-- 目录栏中滚动定位对应超链接 -->
+<script type="text/javascript">
+  //是否激活目录栏样式
+  function isActiveCatalog() {
+    //设置初始高度向下20
+    let offsetHeight = 20;
+
+    //获取当前页面滚动位置距离页面顶部的高度值***
+    let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+
+    //hexo渲染的文章页面标题H1、2、····,它的类名是headerlink，获取该类名对应的文章标题标签、
+    let headerLinkList = document.getElementsByClassName("headerlink");
+
+    //hexo渲染生成的目录栏中，标题列表超链接的类名是toc-link获取其全部对应标签内容装进变量里
+    let catalogLinkList = document.getElementsByClassName("toc-link");
+
+    //获取目录栏中所有标题标签元素进行遍历判断与设定
+    for (let i = 0; i < catalogLinkList.length; i++) {
+      //定义这一个目录标题的高度，我也还不是很明白offsettop和scrollTop之间的区别
+      let currentTopCatalog = headerLinkList[i].offsetTop - offsetHeight;
+
+      //定义下一个目录标题的高度******
+      let nextTopCatalog = i + 1 === headerLinkList.length ? //判断这一个目录是不是最后一个标题，如果是就赋值无穷，不是就赋值下一个目录标题的高度
+        Infinity : headerLinkList[i + 1].offsetTop - offsetHeight;
+
+      //判断目录标题是不是为当前标题(设置当前目录标题为激活状态)**********
+      if (scrollTop >= currentTopCatalog && scrollTop < nextTopCatalog) {
+        catalogLinkList[i].className = "toc-link toc-active"
+      } else {
+        catalogLinkList[i].className = "toc-link"
+      }
+
+    }
+
+  }
+
+  isActiveCatalog()
+  document.addEventListener("scroll", isActiveCatalog, false);
+</script>
+
+  <script type="text/javascript">
+  $('.menu-button').click(function(){
+    $('.item').toggleClass('moblie-hide')
+  })
+</script>
+
+  <script type="text/javascript">
+  $('.wechat-link')
+    .popup({
+      inline: true,
+      on: 'click'
+    });
+
+  $('.public-link')
+    .popup({
+      inline: true,
+      on: 'click'
+    });
+
+</script>
+
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+<!-- 实现fancybox的脚本 -->
+ <script type="text/javascript">
+   // 集成fancybox, 为所有img元素添加父元素
+   $("p img").each(function () {
+      // $(this).attr("data-fancybox", "gallery"); 直接给img添加data-fancybox会导致点击图片后图片消失
+       var element = document.createElement("a");
+       $(element).attr("data-fancybox", "gallery");
+       $(element).attr("href", $(this).attr("src"));
+       $(this).wrap(element);
+   });
+ </script>
+
+  <!-- 朋友圈功能 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+  
+<script src="/js/request.js"></script>
 
 
+  
+
+  
+
+  
+<script src="/js/countdown.js"></script>
 
 
-    </body>
+</body>
+
 </html>
